@@ -1,2 +1,2 @@
 # CAGE
-Python scripts in CAGEseq data analysis pipeline.
+Scripts in CAGEseq data analysis pipeline.
