@@ -12,7 +12,8 @@ GENOME_DIR=../../intermediate_data/genome_directory/
 OUT_DIR=../../intermediate_data/mapped_reads/
 
 
-STAR --runThreadN $THREADS --genomeDir $GENOME_DIR --readFilesIn $read_1 $read_2 --readFilesCommand zcat --outFileNamePrefix $OUT_DIR
+STAR --runThreadN $THREADS --genomeDir $GENOME_DIR --readFilesIn $read_1 $read_2 --readFilesCommand zcat --outFileNamePrefix $OUT_DIR --outSAMtype BAM SortedByCoordinate --limitGenomeGenerateRAM 1001110470922 --limitBAMsortRAM 3000000000
+
 
 echo "Done mapping for $tissue"
 
