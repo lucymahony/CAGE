@@ -9,8 +9,7 @@
 #SBATCH --mail-user=mahony@nbi.ac.uk # send-to address
 #SBATCH -p ei-medium
 
-source package 266730e5-6b24-4438-aecb-ab95f1940339 #STAR
-source package 638df626-d658-40aa-80e5-14a275b7464b #Samtools 1.15.1
+source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
 
 # Variables
 GENOME_DIR="../../intermediate_data/genome_directory" # Directory for storing output genome data
