@@ -13,7 +13,7 @@ source package 266730e5-6b24-4438-aecb-ab95f1940339 #STAR
 source package 638df626-d658-40aa-80e5-14a275b7464b #Samtools 1.15.1
 
 # Variables
-GENOME_DIR="" # Directory for storing output genome data
+GENOME_DIR="genome_directory" # Directory for storing output genome data
 FASTA="../../input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta" # Path to reference genome .fasta file
 GTF="../../input_data/fielder_genome_data/fielder.release.gtf" # Path to gene annotations .gtf file
 THREADS=16 # Number of threads
