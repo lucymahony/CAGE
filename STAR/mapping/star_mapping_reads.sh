@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source package 638df626-d658-40aa-80e5-14a275b7464b # samtools
-source package 6394519c-541f-479c-b064-dd0b912eac04 # bedtools
+source /ei/software/staging/RCSUPPORT-1153/stagingloader #STAR
 
 mapfile -t TISSUES < tissue.list
 tissue=${TISSUES[$SLURM_PROCID]}
