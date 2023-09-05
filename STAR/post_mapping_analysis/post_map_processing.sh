@@ -11,7 +11,7 @@ process_file() {
     intermediate_name=${tissue}_${prefix}
     summary_statistics=${intermediate_name}_summary_statistics.txt
 
-    file=../star_output/${tissue}${suffix}
+    file=../../intermediate_data/mapped_reads/${tissue}${suffix}
     echo "Processing: ${file}" > ${summary_statistics}
     echo "---------------------------------------------" >> ${summary_statistics}
 
