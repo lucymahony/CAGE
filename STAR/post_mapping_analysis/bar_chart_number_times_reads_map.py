@@ -5,7 +5,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
+from scipy.stats import sem
 
 # Load in the data
 number_reads_mapping = pd.read_csv("number_reads_mapping.csv", sep=",", header=0)
@@ -18,7 +18,8 @@ number_reads_mapping['number_of_reads'] = number_reads_mapping['number_of_reads'
 print(number_reads_mapping.head())
 
 # Calculate the mean value for each number_of_hits_in_reference within each tissue_type
-mean_number_reads_mapping = number_reads_mapping.groupby(['tissue_type', 'number_of_hits_in_reference'])['number_of_reads'].mean().reset_index()
+mean_df = number_reads_mapping.groupby(['tissue_type', 'number_of_hits_in_reference'])['number_of_reads'].mean().reset_index()
+sem_df = number_reads_mapping.groupby(['tissue_type', 'number_of_hits_in_reference'])['number_of_reads'].apply(sem).reset_index()
 
 # Find the unique tissue_types
 tissue_types = number_reads_mapping['tissue_type'].unique()
@@ -34,7 +35,12 @@ for i, tissue_type in enumerate(tissue_types):
 
     # Plot the bar chart using the mean values
     sns.barplot(x='number_of_hits_in_reference', y='number_of_reads',
-                data=mean_number_reads_mapping[mean_number_reads_mapping['tissue_type'] == tissue_type], ax=ax, ci='se')
+                data=mean_df[mean_df['tissue_type'] == tissue_type], ax=ax, ci='se')
+    # Add error bars for standard error
+    x_vals = range(len(mean_df[mean_df['tissue_type'] == tissue_type]['number_of_hits_in_reference']))
+    y_vals = mean_df[mean_df['tissue_type'] == tissue_type]['number_of_reads']
+    error_vals = sem_df[sem_df['tissue_type'] == tissue_type]['number_of_reads']
+    ax.errorbar(x_vals, y_vals, yerr=error_vals, fmt='none', capsize=5, color='black')
 
     # Overlay the individual data points as gray dots
     sns.stripplot(x='number_of_hits_in_reference', y='number_of_reads', data=number_reads_mapping[number_reads_mapping['tissue_type'] == tissue_type],
