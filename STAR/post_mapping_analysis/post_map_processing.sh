@@ -15,18 +15,19 @@ process_file() {
     echo "Processing: ${file}" > ${summary_statistics}
     echo "---------------------------------------------" >> ${summary_statistics}
 
-    # sort 
-
+    # Convert SAM to BAM for further processing and sort
+    samtools view -bS --threads 16 ${file} -o ${intermediate_name}.bam
+    # Sort 
     samtools sort --threads 16 ${file} -o ${intermediate_name}_sorted.bam
     # human readable .sam files 
-    samtools view -h --threads 16  ${intermediate_name}_sorted.bam > ${intermediate_name}.sam
+    samtools view -h --threads 16  ${intermediate_name}_sorted.bam > ${intermediate_name}_sorted.sam
     echo " Total number of reads in the BAM file " >> ${summary_statistics}
     samtools view -c ${intermediate_name}_sorted.bam >> ${summary_statistics}
     echo " counting only mapped (primary aligned) reads" >> ${summary_statistics}
     samtools view -c -F 260 ${intermediate_name}_sorted.bam >> ${summary_statistics}
 
-    bedtools genomecov -ibam ${intermediate_name}.sam -5 -strand +  -bg > ${intermediate_name}_plus.bed
-    bedtools genomecov -ibam ${intermediate_name}.sam -5 -strand -  -bg > ${intermediate_name}_minus.bed 
+    bedtools genomecov -ibam ${intermediate_name}_sorted.sam -5 -strand +  -bg > ${intermediate_name}_plus.bed
+    bedtools genomecov -ibam ${intermediate_name}_sorted.sam -5 -strand -  -bg > ${intermediate_name}_minus.bed 
 
     echo "Statistics for ${intermediate_name}_plus.bed:" >> ${summary_statistics}
     wc -l ${intermediate_name}_plus.bed >> ${summary_statistics}
