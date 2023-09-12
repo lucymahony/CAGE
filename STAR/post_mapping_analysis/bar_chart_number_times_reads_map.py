@@ -35,7 +35,7 @@ for i, tissue_type in enumerate(tissue_types):
 
     # Plot the bar chart using the mean values
     sns.barplot(x='number_of_hits_in_reference', y='number_of_reads',
-                data=mean_df[mean_df['tissue_type'] == tissue_type], ax=ax, ci='se')
+                data=mean_df[mean_df['tissue_type'] == tissue_type], ax=ax, ci=None)
     # Add error bars for standard error
     x_vals = range(len(mean_df[mean_df['tissue_type'] == tissue_type]['number_of_hits_in_reference']))
     y_vals = mean_df[mean_df['tissue_type'] == tissue_type]['number_of_reads']
