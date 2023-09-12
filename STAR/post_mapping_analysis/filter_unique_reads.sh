@@ -17,7 +17,7 @@ intermediate_directory="/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scra
 
 
 # List of tissue samples
-tissues=("IS1" "IS2" "SP1" "SP2" "SP3" "RO1" "RO2" "RO3" "LE1" "LE2" "LE3")
+tissues=("IS1" "IS2" "IS3" "SP1" "SP2" "SP3" "RO1" "RO2" "RO3" "LE1" "LE2" "LE3")
 
 # Loop over each tissue and process the corresponding SAM file
 for tissue in "${tissues[@]}"; do
