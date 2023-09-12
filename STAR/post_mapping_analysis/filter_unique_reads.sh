@@ -23,8 +23,13 @@ tissues=("IS1" "IS2" "IS3" "SP1" "SP2" "SP3" "RO1" "RO2" "RO3" "LE1" "LE2" "LE3"
 for tissue in "${tissues[@]}"; do
     # Mapped_read_file_name
     input_sam="$intermediate_directory/${tissue}Aligned.out.sam"
-
+    # Get the header of the sam file 
+    samtools view -H "${input_sam}" > ${tissue}_header.sam
+    # Filter for uniquely mapped reads
     egrep '\<NH:i:[1]{1}\>' "${input_sam}" | cat > uniquelymapped_${tissue}.sam
-
+    # Add the header 
+    cat ${tissue}_header.sam uniquelymapped_${tissue}.sam > temp.sam
+    mv temp.sam uniquelymapped_${tissue}.sam
+    rm ${tissue}_header.sam
 done
 
