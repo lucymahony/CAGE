@@ -30,7 +30,9 @@ def get_all_data(name):
     return df
 
 def plot_results():
+    # Dictionary for Plot Titles
     title_map = {'IS': 'Immature Spike', 'SP': 'Spike', 'RO': 'Root', 'LE': 'Leaf'}
+    subplot_map = {'Aligned.out': 'All Mapped Reads', 'uniquelymapped': 'Uniquely Mapped Reads Only'}
 
     # Create a 4x2 grid of bar charts
     fig, axes = plt.subplots(4, 2, figsize=(20, 10))
@@ -41,17 +43,27 @@ def plot_results():
         # Get the mean and standard error of the mean for each number of mismatches
         mean_df = df.groupby(['tissue', 'number_of_mismatches']).mean().reset_index()
         sem_df = df.groupby(['tissue', 'number_of_mismatches']).sem().reset_index()
+
+        # Plot the bar charts
         for i, tissue_type in enumerate(['IS', 'SP', 'RO', 'LE']):
+            # Specify the axis to plot on
             ax = axes[i] if name == 'Aligned.out' else axes[i + 4]
-            sns.barplot(x='number_of_mismatches', y='number_of_reads', data = mean_df[mean_df['tissue'] == tissue_type], ax=ax, errorbar=None)
+
+            # Plot the bar chart
+            sns.barplot(x='number_of_mismatches', y='number_of_reads', data = mean_df[mean_df['tissue'] == tissue_type],
+                        ax=ax, errorbar=None)
             # Add error bars for standard error
             x_vals = range(len(mean_df[mean_df['tissue'].str.startswith(tissue_type)]['number_of_mismatches']))
             y_vals = mean_df[mean_df['tissue'].str.startswith(tissue_type)]['number_of_reads']
             error_vals = sem_df[sem_df['tissue'].str.startswith(tissue_type)]['number_of_reads']
             ax.errorbar(x_vals, y_vals, yerr=error_vals, fmt='none', capsize=5, color='black')
+
             # Overlay the individual data points as gray dots
-            sns.stripplot(x='number_of_mismatches', y='number_of_reads', data=df[df['tissue'].str.startswith(tissue_type)], ax=ax, color='gray', jitter=0.2, size=5)
-            ax.set_title(title_map.get(tissue_type, tissue_type))
+            sns.stripplot(x='number_of_mismatches', y='number_of_reads',
+                          data=df[df['tissue'].str.startswith(tissue_type)], ax=ax, color='gray', jitter=0.2, size=5)
+
+            # Set the title and axis labels
+            ax.set_title(f"{title_map.get(tissue_type, tissue_type)} - {subplot_map.get(name, name)}")
             ax.set_xlabel('Number of Mismatches')
             ax.set_ylabel('Million Reads')
 
