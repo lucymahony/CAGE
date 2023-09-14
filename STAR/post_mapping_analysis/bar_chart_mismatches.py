@@ -43,7 +43,7 @@ def plot_results():
         sem_df = df.groupby(['tissue', 'number_of_mismatches']).sem().reset_index()
         for i, tissue_type in enumerate(['IS', 'SP', 'RO', 'LE']):
             ax = axes[i] if name == 'Aligned.out' else axes[i + 4]
-            sns.barplot(x='number_of_mismatches', y='number_of_reads', data = mean_df[mean_df['tissue'] == tissue_type], ax=ax, ci=None)
+            sns.barplot(x='number_of_mismatches', y='number_of_reads', data = mean_df[mean_df['tissue'] == tissue_type], ax=ax, errorbar=None)
             # Add error bars for standard error
             x_vals = range(len(mean_df[mean_df['tissue'].str.startswith(tissue_type)]['number_of_mismatches']))
             y_vals = mean_df[mean_df['tissue'].str.startswith(tissue_type)]['number_of_reads']
