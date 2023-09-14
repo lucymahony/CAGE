@@ -12,7 +12,7 @@ from scipy.stats import sem
 # Load in the data
 
 def get_data(tissue, name):
-    df = pd.read_csv(f"{tissue}_{name}_XM_histogram.txt", sep=" ", header=None)
+    df = pd.read_csv(f"{tissue}_{name}_XM_histogram.txt", sep="\s+", header=None)
     df.columns = ['number_of_reads', 'number_of_mismatches']
     df['tissue'] = tissue
     df['name'] = name
