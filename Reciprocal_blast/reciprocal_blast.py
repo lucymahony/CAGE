@@ -11,9 +11,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
 from Bio.Blast.Applications import NcbiblastpCommandline
 import pandas as pd
-import statistics
-import docx
-import subprocess
+
 
 
 def find_chromosome_gene_is_on(gene_name):
@@ -61,17 +59,18 @@ def protein_seqrec_cs(transcript_name):
 
 
 
-def find_fielder_homeolog(gene_name, blast_threshold):
+def find_fielder_homeolog(gene_name):
     """
     Find the homeolog in Fielder that has the highest blast score
     :param gene_name: TraesCS1A02G199600.2
     :param blast_threshold: 0.9
     :return: TraesFLD1A01G000200.1
 
-    # Note in the command line I have run
+    # Note in folder input data I have run the script make_blast_db.sh which performs the following command:
     makeblastdb -dbtype prot -in fielder.release.protein.fa -input_type fasta -blastdb_version 5
 
     """
+    blast_threshold = 0.9
     # Fielder protein FASTA file
     fielder_fasta_file = f"input_data/fielder.release.protein.fa"
 
@@ -109,3 +108,20 @@ def find_fielder_homeolog(gene_name, blast_threshold):
         # if results is an empty dataframe then return NaN
         return best_match
 
+def read_cs_triad_table(hc_triad_file_path):
+    """
+    Reads in the hc cs triads as a pandas dataframe
+    :return: pandas dataframe
+    """
+    df = pd.read_csv(hc_triad_file_path, sep='\t', header=None, names=['A', 'B', 'D'])
+    return df
+
+
+def generate_fielder_triad_table():
+    cs_triad_table = read_cs_triad_table('input_data/hc_triad_table')
+    fielder_triad_table = cs_triad_table.applymap(find_fielder_homeolog)
+    return fielder_triad_table
+
+if __name__ == '__main__':
+    fielder_triad_table = generate_fielder_triad_table()
+    fielder_triad_table.to_csv('output_data/fielder_triad_table', sep='\t', index=False, header=False)
