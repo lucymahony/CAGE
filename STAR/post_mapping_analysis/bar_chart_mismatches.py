@@ -57,3 +57,5 @@ def plot_results():
 
     plt.tight_layout()
     plt.savefig('number_mismapped_reads.pdf')
+
+plot_results()
