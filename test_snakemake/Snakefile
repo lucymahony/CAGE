@@ -1,0 +1,29 @@
+rule make_up_results:
+	output: "the_results.txt"
+	shell: r"sleep 1m; touch the_results.txt"
+
+rule trying_hisat_2:
+	output: "hisat_results.txt"
+	shell: r"""source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 
+		   hisat2 --help > hisat_results.txt"""
+
+rule trim_reads:
+	output: "trimmed_report"
+	input: 
+		#read_1 = "INPUT_DATA/{myfile}.fq",
+		#read_2 = "INPUT_DATA/{myfile}.fq",
+		#solexa = "INPUT_DATA/solexa_sequencing_primers.fa"
+	shell: r"""
+		source package 50fcf79b-73a3-4f94-9553-5ed917823423
+		echo "completed trimming" > {output}
+		"""
+
+
+
+
+
+
+
+
+
+
