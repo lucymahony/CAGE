@@ -30,7 +30,7 @@ rule fastqc:
 	output: "{INTERMEDIATE_DATA}/{sample}_trimmed_fastqc_reports"
 	input: "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
 	log: "{INTERMEDIATE_DATA}/{sample}_fastqc.log"
-	shell: r"source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
-			fastqc -t 16 {input} -o {output}"
+	shell: r"""source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
+			fastqc -t 16 {input} -o {output}"""
 
 
