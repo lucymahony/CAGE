@@ -1,3 +1,4 @@
+
 INPUT_DATA = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data"
 INTERMEDIATE_DATA = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/intermediate_data/snakemake_intermediate_data"
 
@@ -10,23 +11,22 @@ rule trying_hisat_2:
 	shell: r"""source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 
 		   hisat2 --help > hisat_results.txt"""
 
+
 rule trim_reads:
-	output: 
-		report = "{INTERMEDIATE_DATA}/trimmed_report",
-		trimmed = "{INTERMEDIATE_DATA}/IS1_test.trimmed.fastq.gz"
-	input: 
-		read_1 = "{INPUT_DATA}/cage_data/Fastq_R1/IS1_R1.fastq.gz",
-		read_2 = "{INPUT_DATA}/cage_data/Fastq_R2/IS1_R2.fastq.gz",
-		solexa = "{INPUT_DATA}/solexa_sequencing_primers.fa"
-	
-	log: "logs/trim_reads.log"
-
-	shell: r"""
-		source package 50fcf79b-73a3-4f94-9553-5ed917823423
-		trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout {output.trimmed} ILLUMINACLIP:../solexa_sequencing_primers.fa:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
-		echo "completed trimming" > {output.report}
-		"""
-
+    output: 
+        report = "{INTERMEDIATE_DATA}/{sample}_trimmed_report",
+        trimmed = "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
+    input: 
+        read_1 = "{INPUT_DATA}/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
+        read_2 = "{INPUT_DATA}/cage_data/Fastq_R2/{sample}_R2.fastq.gz",
+        solexa = "{INPUT_DATA}/solexa_sequencing_primers.fa"
+    log: "{INTERMEDIATE_DATA}/{sample}_trim_reads.log"
+    shell: 
+        r"""
+        source package 50fcf79b-73a3-4f94-9553-5ed917823423
+        trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout {output.trimmed} ILLUMINACLIP:../solexa_sequencing_primers.fa:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
+        echo "completed trimming" > {output.report}
+        """
 
 
 
