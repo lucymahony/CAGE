@@ -16,9 +16,10 @@ rule trim_reads:
     output: 
         trimmed = "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
     input: 
-        read_1 = "{INPUT_DATA}/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
-        read_2 = "{INPUT_DATA}/cage_data/Fastq_R2/{sample}_R2.fastq.gz",
-        solexa = "{INPUT_DATA}/solexa_sequencing_primers.fa"
+        read_1 = expand("{file}/cage_data/Fastq_R1/{sample}_R1.fastq.gz", file = INPUT_DATA),
+        read_2 = expand("{file}/cage_data/Fastq_R2/{sample}_R2.fastq.gz", file = INPUT_DATA),
+        solexa = expand("{file}/solexa_sequencing_primers.fa", file = INPUT_DATA),
+		
     log: "{INTERMEDIATE_DATA}/{sample}_trim_reads.log"
     shell: 
         r"""
@@ -29,6 +30,13 @@ rule trim_reads:
 
 
 
+CONDITIONS = ["ref", "etoh60", "temp33"]
+KMERS      = ["19", "21", "25", "27"]
+
+rule all_max:
+    input:
+        expand("assem/{condition}_k{kmer}_max_contig.txt", condition = CONDITIONS,
+                                                           kmer = KMERS )
 
 
 
