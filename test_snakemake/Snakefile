@@ -20,7 +20,7 @@ rule trim_reads:
 		solexa = "{INPUT_DATA}/solexa_sequencing_primers.fa"
 	shell: r"""
 		source package 50fcf79b-73a3-4f94-9553-5ed917823423
-		trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout ${output.trimmed} ILLUMINACLIP:../solexa_sequencing_primers.fa:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
+		trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout {output.trimmed} ILLUMINACLIP:../solexa_sequencing_primers.fa:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
 		echo "completed trimming" > {output.report}
 		"""
 
