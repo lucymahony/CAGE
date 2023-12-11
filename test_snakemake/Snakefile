@@ -14,7 +14,6 @@ rule trying_hisat_2:
 
 rule trim_reads:
     output: 
-        report = "{INTERMEDIATE_DATA}/{sample}_trimmed_report",
         trimmed = "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
     input: 
         read_1 = "{INPUT_DATA}/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
@@ -25,7 +24,6 @@ rule trim_reads:
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423
         trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout {output.trimmed} ILLUMINACLIP:../solexa_sequencing_primers.fa:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
-        echo "completed trimming" > {output.report}
         """
 
 
