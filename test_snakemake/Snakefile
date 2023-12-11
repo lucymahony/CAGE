@@ -19,25 +19,13 @@ rule trim_reads:
         read_1 = expand("{file}/cage_data/Fastq_R1/{sample}_R1.fastq.gz", file = INPUT_DATA),
         read_2 = expand("{file}/cage_data/Fastq_R2/{sample}_R2.fastq.gz", file = INPUT_DATA),
         solexa = expand("{file}/solexa_sequencing_primers.fa", file = INPUT_DATA),
-		
+
     log: "{INTERMEDIATE_DATA}/{sample}_trim_reads.log"
     shell: 
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423
         trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout {output.trimmed} ILLUMINACLIP:../solexa_sequencing_primers.fa:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
         """
-
-
-
-
-CONDITIONS = ["ref", "etoh60", "temp33"]
-KMERS      = ["19", "21", "25", "27"]
-
-rule all_max:
-    input:
-        expand("assem/{condition}_k{kmer}_max_contig.txt", condition = CONDITIONS,
-                                                           kmer = KMERS )
-
 
 
 
