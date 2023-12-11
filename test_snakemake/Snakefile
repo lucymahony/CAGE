@@ -1,4 +1,5 @@
 INPUT_DATA = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data"
+INTERMEDIATE_DATA = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/intermediate_data/snakemake_intermediate_data"
 rule make_up_results:
 	output: "the_results.txt"
 	shell: r"sleep 1m; touch the_results.txt"
@@ -9,7 +10,7 @@ rule trying_hisat_2:
 		   hisat2 --help > hisat_results.txt"""
 
 rule trim_reads:
-	output: "trimmed_report"
+	output: "{INTERMEDIATE_DATA}/trimmed_report"
 	input: 
 		#read_1 = "INPUT_DATA/{myfile}.fq",
 		#read_2 = "INPUT_DATA/{myfile}.fq",
