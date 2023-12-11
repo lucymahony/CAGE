@@ -15,9 +15,9 @@ rule trim_reads:
 		report = "{INTERMEDIATE_DATA}/trimmed_report",
 		trimmed = "{INTERMEDIATE_DATA}/IS1_test.trimmed.fastq.gz"
 	input: 
-		read_1 = "{INPUT_DATA}/cage_data/Fastq_R1/IS1_R1.fastq.gz",
-		read_2 = "{INPUT_DATA}/cage_data/Fastq_R2/IS1_R2.fastq.gz",
-		solexa = "{INPUT_DATA}/solexa_sequencing_primers.fa"
+		read_1 = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cage_data/Fastq_R1/IS1_R1.fastq.gz",
+		read_2 = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cage_data/Fastq_R2/IS1_R2.fastq.gz",
+		solexa = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/solexa_sequencing_primers.fa"
 	shell: r"""
 		source package 50fcf79b-73a3-4f94-9553-5ed917823423
 		trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout {output.trimmed} ILLUMINACLIP:../solexa_sequencing_primers.fa:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
