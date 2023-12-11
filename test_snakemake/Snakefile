@@ -16,7 +16,7 @@ rule trim_reads:
     output: "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
     input: 
         read_1 = expand("{file}/cage_data/Fastq_R1/{sample}_R1.fastq.gz", file=INPUT_DATA, sample=['IS1']),
-        read_2 = expand("{file}/cage_data/Fastq_R2/{sample}_R2.fastq.gz", file= NPUT_DATA, sample=['IS1']),
+        read_2 = expand("{file}/cage_data/Fastq_R2/{sample}_R2.fastq.gz", file=INPUT_DATA, sample=['IS1']),
         solexa = expand("{file}/solexa_sequencing_primers.fa", file = INPUT_DATA),
 
     log: "{INTERMEDIATE_DATA}/{sample}_trim_reads.log"
