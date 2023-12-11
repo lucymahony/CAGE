@@ -15,8 +15,8 @@ rule trying_hisat_2:
 rule trim_reads:
     output: "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
     input: 
-        read_1 = expand("{file}/cage_data/Fastq_R1/{sample}_R1.fastq.gz", file=INPUT_DATA, sample=['IS1']),
-        read_2 = expand("{file}/cage_data/Fastq_R2/{sample}_R2.fastq.gz", file=INPUT_DATA, sample=['IS1']),
+        read_1 = expand("{file}/cage_data/Fastq_R1/{sample}_R1.fastq.gz", file=INPUT_DATA),
+        read_2 = expand("{file}/cage_data/Fastq_R2/{sample}_R2.fastq.gz", file=INPUT_DATA),
         solexa = expand("{file}/solexa_sequencing_primers.fa", file = INPUT_DATA),
 
     log: "{INTERMEDIATE_DATA}/{sample}_trim_reads.log"
@@ -26,6 +26,11 @@ rule trim_reads:
         trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout {output} ILLUMINACLIP:../{input.solexa}:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
         """
 
-
+rule fastqc:
+	output: "{INTERMEDIATE_DATA}/{sample}_trimmed_fastqc_reports"
+	input: "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
+	log: "{INTERMEDIATE_DATA}/{sample}_fastqc.log"
+	shell: r"source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
+			fastqc -t 16 {input} -o {output}"
 
 
