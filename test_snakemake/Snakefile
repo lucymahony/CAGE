@@ -16,11 +16,10 @@ rule trim_reads:
         """
 
 rule fastqc:
-	output: "../intermediate_data/snakemake_intermediate_data/{sample}.fastqc_reports"
 	input: "../intermediate_data/snakemake_intermediate_data/{sample}.fq.gz"
 	log: "../intermediate_data/snakemake_intermediate_data/{sample}.fastqc.log"
 	shell: r"""source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
-			fastqc -t 16 {input} -o {output}"""
+			fastqc -t 16 {input} -o ../intermediate_data/snakemake_intermediate_data/"""
 
 
 # rule star_index:
