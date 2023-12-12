@@ -24,7 +24,7 @@ rule fastqc:
     # -o . tells snakemake to produce files in current directory. then rename 
     shell: 
         """source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
-        fastqc -t 16 -o . {input} {output}
+        fastqc -t 16 -o . {input}
         mv {wildcards.myfile}_fastqc.html {output.html}
         mv {wildcards.myfile}_fastqc.zip  {output.zip}
         """
