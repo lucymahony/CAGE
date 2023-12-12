@@ -1,13 +1,8 @@
 rule make_up_results:
 	output: "the_results.txt"
 	shell: r"sleep 1m; touch the_results.txt"
-    
+
 rule trim_reads:
-    output: 
-        paired_1: "../intermediate_data/snakemake_intermediate_data/{sample}_1P.fq.gz",
-        unpaired_1: "../intermediate_data/snakemake_intermediate_data/{sample}_1U.fq.gz",
-        paired_2: "../intermediate_data/snakemake_intermediate_data/{sample}_2P.fq.gz",
-        unpaired_2: "../intermediate_data/snakemake_intermediate_data/{sample}_2U.fq.gz",
     input: 
         read_1 = "../input_data/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
         read_2 = "../input_data/cage_data/Fastq_R2/{sample}_R2.fastq.gz",
@@ -17,7 +12,7 @@ rule trim_reads:
     shell: 
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423
-        trimmomatic PE -threads 16  {input.read_1} {input.read_2} {output.paired_1} {output.unpaired_1} {output.paired_2} {output.unpaired_2} ILLUMINACLIP:../{input.solexa}:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
+        trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout ${sample} ILLUMINACLIP:../{input.solexa}:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
         """
 
 rule fastqc:
