@@ -15,19 +15,63 @@ rule trim_reads:
         trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout ${sample} ILLUMINACLIP:../{input.solexa}:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
         """
 
+
+
 rule fastqc:
-    output: 
-        html = "../intermediate_data/snakemake_intermediate_data/{myfile}_fastqc.html",
-        zip  = "../intermediate_data/snakemake_intermediate_data/{myfile}_fastqc.zip"
-    input: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
-    log: "../intermediate_data/snakemake_intermediate_data/{myfile}.fastqc.log"
-    # -o . tells snakemake to produce files in current directory. then rename 
-    shell: 
-        """source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
-        fastqc -t 16 -o . {input}
-        mv {wildcards.myfile}_fastqc.html {output.html}
-        mv {wildcards.myfile}_fastqc.zip  {output.zip}
+    input:  "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
+    output:
+        html="../intermediate_data/snakemake_intermediate_data/{myfile}_fastqc.html",
+        zip="../intermediate_data/snakemake_intermediate_data/{myfile}_fastqc.zip"
+    params:
+        extra="" # any extra parameters for fastqc
+    threads: 2 # adjust as needed
+    log: "logs/fastqc.log"
+    shell:
         """
+        # Define memory per thread
+        mem_mb=$(python -c 'print({{int({resources.mem_mb} / {threads})}})')
+
+        # Function to get basename without extension
+        basename_without_ext() {{
+            base=$(basename "$1")
+            base=${{base//.gz/}}
+            base=${{base//.bz2/}}
+            base=${{base//.txt/}}
+            base=${{base//.fastq/}}
+            base=${{base//.fq/}}
+            base=${{base//.sam/}}
+            base=${{base//.bam/}}
+            echo "$base"
+        }}
+
+        # Check for multiple input files
+        if [ "${{#input[@]}}" -gt 1 ]; then
+            echo "Got multiple input files, I don't know how to process them!"
+            exit 1
+        fi
+
+        # Create temporary directory
+        tempdir=$(mktemp -d)
+        trap "rm -rf $tempdir" EXIT
+
+        # Run fastqc
+        fastqc \
+            --threads {threads} \
+            --memory $mem_mb \
+            {params.extra} \
+            --outdir $tempdir \
+            {input} \
+            &> {log}
+
+        # Move outputs to proper location
+        output_base=$(basename_without_ext {input})
+        html_path="$tempdir/${{output_base}}_fastqc.html"
+        zip_path="$tempdir/${{output_base}}_fastqc.zip"
+
+        mv $html_path {output.html}
+        mv $zip_path {output.zip}
+        """
+
 
 
 # rule star_index:
