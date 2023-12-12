@@ -1,9 +1,9 @@
 
 rule trim_reads:
     output: 
-        paired_1: "../intermediate_data/snakemake_intermediate_data/{sample}_1P.fq.gz"
-        unpaired_1: "../intermediate_data/snakemake_intermediate_data/{sample}_1U.fq.gz"
-        paired_2: "../intermediate_data/snakemake_intermediate_data/{sample}_2P.fq.gz"
+        paired_1: "../intermediate_data/snakemake_intermediate_data/{sample}_1P.fq.gz",
+        unpaired_1: "../intermediate_data/snakemake_intermediate_data/{sample}_1U.fq.gz",
+        paired_2: "../intermediate_data/snakemake_intermediate_data/{sample}_2P.fq.gz",
         unpaired_2: "../intermediate_data/snakemake_intermediate_data/{sample}_2U.fq.gz"
     input: 
         read_1 = "../input_data/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
