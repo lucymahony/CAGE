@@ -27,34 +27,34 @@ rule fastqc:
 			fastqc -t 16 {input} -o {output}"""
 
 
-rule star_index:
-    output: "../intermediate_data/snakemake_intermediate_data/"
+# rule star_index:
+#     output: "../intermediate_data/snakemake_intermediate_data/"
 
-rule bowtie_index:
-    output: "../intermediate_data/snakemake_intermediate_data/"
-rule bwa_index:
-    output: "../intermediate_data/snakemake_intermediate_data/"
+# rule bowtie_index:
+#     output: "../intermediate_data/snakemake_intermediate_data/"
+# rule bwa_index:
+#     output: "../intermediate_data/snakemake_intermediate_data/"
 
 
-rule hisat_index:
-    output: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
-    shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
-        hisat2_extract_splice_sites.py fielder.release.gtf > fielder.ss
-        hisat2_extract_exons.py fielder.release.gtf > fielder.exon
-        hisat2-build -p 16 --ss fielder.ss --exon fielder.exon 201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta fielder.idx
-    """
-    log: "../intermediate_data/snakemake_intermediate_data/hisat.log"
+# rule hisat_index:
+#     output: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
+#     shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
+#         hisat2_extract_splice_sites.py fielder.release.gtf > fielder.ss
+#         hisat2_extract_exons.py fielder.release.gtf > fielder.exon
+#         hisat2-build -p 16 --ss fielder.ss --exon fielder.exon 201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta fielder.idx
+#     """
+#     log: "../intermediate_data/snakemake_intermediate_data/hisat.log"
 
-rule hisat_align:
-    output: "../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam"
-    input: 
-        index = "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx", 
-        read_1 = "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
-        read_2 =  "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
-    shell: r"""
-    source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 # source hisat2 
-    source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
-    hisat2 -x f{input.index} -p 16 -1 {input.read_1} -2 {input.read_1} | \
-    samtools view -bS > ../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam
-    """"
+# rule hisat_align:
+#     output: "../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam"
+#     input: 
+#         index = "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx", 
+#         read_1 = "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+#         read_2 =  "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+#     shell: r"""
+#     source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 # source hisat2 
+#     source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
+#     hisat2 -x f{input.index} -p 16 -1 {input.read_1} -2 {input.read_1} | \
+#     samtools view -bS > ../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam
+#     """"
 
