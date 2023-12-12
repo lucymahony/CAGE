@@ -1,7 +1,4 @@
 
-INPUT_DATA = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data"
-INTERMEDIATE_DATA = "/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/intermediate_data/snakemake_intermediate_data"
-
 rule make_up_results:
 	output: "the_results.txt"
 	shell: r"sleep 1m; touch the_results.txt"
@@ -13,13 +10,13 @@ rule trying_hisat_2:
 
 
 rule trim_reads:
-    output: "{INTERMEDIATE_DATA}/{sample}.trimmed.fastq.gz"
+    output: "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
     input: 
-        read_1 = expand("{file}/cage_data/Fastq_R1/{sample}_R1.fastq.gz", file=INPUT_DATA),
-        read_2 = expand("{file}/cage_data/Fastq_R2/{sample}_R2.fastq.gz", file=INPUT_DATA),
-        solexa = expand("{file}/solexa_sequencing_primers.fa", file = INPUT_DATA),
+        read_1 = "../input_data/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
+        read_2 = "../input_data/cage_data/Fastq_R2/{sample}_R2.fastq.gz",
+        solexa = "../input_data/solexa_sequencing_primers.fa"
 
-    log: "{INTERMEDIATE_DATA}/{sample}.trim_reads.log"
+    log: "../intermediate_data/snakemake_intermediate_data/{sample}.trim_reads.log"
     shell: 
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423
@@ -27,9 +24,9 @@ rule trim_reads:
         """
 
 rule fastqc:
-	output: "{INTERMEDIATE_DATA}/{sample}.trimmed_fastqc_reports"
-	input: "{INTERMEDIATE_DATA}/{sample}.trimmed.fastq.gz"
-	log: "{INTERMEDIATE_DATA}/{sample}.fastqc.log"
+	output: "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed_fastqc_reports"
+	input: "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+	log: "../intermediate_data/snakemake_intermediate_data/{sample}.fastqc.log"
 	shell: r"""source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
 			fastqc -t 16 {input} -o {output}"""
 
