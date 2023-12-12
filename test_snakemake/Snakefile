@@ -5,14 +5,14 @@ rule make_up_results:
 
 rule trim_reads:
     output: 
-        paired1: "../intermediate_data/snakemake_intermediate_data/{sample}_1P.fq.gz",
-        unpaired1: "../intermediate_data/snakemake_intermediate_data/{sample}_1U.fq.gz",
-        paired2: "../intermediate_data/snakemake_intermediate_data/{sample}_2P.fq.gz",
-        unpaired2: "../intermediate_data/snakemake_intermediate_data/{sample}_2U.fq.gz",
+    paired1: "../intermediate_data/snakemake_intermediate_data/{sample}_1P.fq.gz",
+    unpaired1: "../intermediate_data/snakemake_intermediate_data/{sample}_1U.fq.gz",
+    paired2: "../intermediate_data/snakemake_intermediate_data/{sample}_2P.fq.gz",
+    unpaired2: "../intermediate_data/snakemake_intermediate_data/{sample}_2U.fq.gz",
     input: 
-        read_1 = "../input_data/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
-        read_2 = "../input_data/cage_data/Fastq_R2/{sample}_R2.fastq.gz",
-        solexa = "../input_data/solexa_sequencing_primers.fa",
+    read_1 = "../input_data/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
+    read_2 = "../input_data/cage_data/Fastq_R2/{sample}_R2.fastq.gz",
+    solexa = "../input_data/solexa_sequencing_primers.fa",
     log: "../intermediate_data/snakemake_intermediate_data/{sample}.trim_reads.log"
     shell: 
         r"""
