@@ -13,13 +13,13 @@ rule trying_hisat_2:
 
 
 rule trim_reads:
-    output: "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
+    output: "{INTERMEDIATE_DATA}/{sample}.trimmed.fastq.gz"
     input: 
         read_1 = expand("{file}/cage_data/Fastq_R1/{sample}_R1.fastq.gz", file=INPUT_DATA),
         read_2 = expand("{file}/cage_data/Fastq_R2/{sample}_R2.fastq.gz", file=INPUT_DATA),
         solexa = expand("{file}/solexa_sequencing_primers.fa", file = INPUT_DATA),
 
-    log: "{INTERMEDIATE_DATA}/{sample}_trim_reads.log"
+    log: "{INTERMEDIATE_DATA}/{sample}.trim_reads.log"
     shell: 
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423
@@ -27,9 +27,9 @@ rule trim_reads:
         """
 
 rule fastqc:
-	output: "{INTERMEDIATE_DATA}/{sample}_trimmed_fastqc_reports"
-	input: "{INTERMEDIATE_DATA}/{sample}_trimmed.fastq.gz"
-	log: "{INTERMEDIATE_DATA}/{sample}_fastqc.log"
+	output: "{INTERMEDIATE_DATA}/{sample}.trimmed_fastqc_reports"
+	input: "{INTERMEDIATE_DATA}/{sample}.trimmed.fastq.gz"
+	log: "{INTERMEDIATE_DATA}/{sample}.fastqc.log"
 	shell: r"""source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
 			fastqc -t 16 {input} -o {output}"""
 
