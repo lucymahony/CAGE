@@ -20,9 +20,11 @@ rule fastqc:
     input: "../intermediate_data/snakemake_intermediate_data/{sample}.fq.gz"
     log: "../intermediate_data/snakemake_intermediate_data/{sample}.fastqc.log"
     # Added mkdir {output as it errors without it }
-    shell: r"""source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
-			mkdir {output}
-            fastqc -t 16 {input} -o {output}"""
+    shell: 
+        """source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
+        mkdir {output}
+        fastqc -t 16 {input} -o {output}
+        """
 
 
 # rule star_index:
