@@ -1,16 +1,10 @@
 
-rule make_up_results:
-	output: "the_results.txt"
-	shell: r"sleep 1m; touch the_results.txt"
-
-rule trying_hisat_2:
-	output: "hisat_results.txt"
-	shell: r"""source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 
-		   hisat2 --help > hisat_results.txt"""
-
-
 rule trim_reads:
-    output: "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+    output: 
+        paired_1: "../intermediate_data/snakemake_intermediate_data/{sample}_1P.fq.gz"
+        unpaired_1: "../intermediate_data/snakemake_intermediate_data/{sample}_1U.fq.gz"
+        paired_2: "../intermediate_data/snakemake_intermediate_data/{sample}_2P.fq.gz"
+        unpaired_2: "../intermediate_data/snakemake_intermediate_data/{sample}_2U.fq.gz"
     input: 
         read_1 = "../input_data/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
         read_2 = "../input_data/cage_data/Fastq_R2/{sample}_R2.fastq.gz",
@@ -20,14 +14,47 @@ rule trim_reads:
     shell: 
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423
-        trimmomatic PE -threads 16  {input.read_1} {input.read_2} -baseout {output} ILLUMINACLIP:../{input.solexa}:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
+        trimmomatic PE -threads 16  {input.read_1} {input.read_2} \ 
+        {output.paired_1} {output.unpaired_1} {output.paired_2} {output.unpaired_2} \
+        ILLUMINACLIP:../{input.solexa}:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
         """
 
 rule fastqc:
 	output: "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed_fastqc_reports"
-	input: "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+	input: "../intermediate_data/snakemake_intermediate_data/{sample}.fq.gz"
 	log: "../intermediate_data/snakemake_intermediate_data/{sample}.fastqc.log"
 	shell: r"""source package 2d6c04bd-2683-4a94-8431-10b5c240ba87
 			fastqc -t 16 {input} -o {output}"""
 
+
+rule star_index:
+    output: "../intermediate_data/snakemake_intermediate_data/"
+
+rule bowtie_index:
+    output: "../intermediate_data/snakemake_intermediate_data/"
+rule bwa_index:
+    output: "../intermediate_data/snakemake_intermediate_data/"
+
+
+rule hisat_index:
+    output: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
+    shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
+        hisat2_extract_splice_sites.py fielder.release.gtf > fielder.ss
+        hisat2_extract_exons.py fielder.release.gtf > fielder.exon
+        hisat2-build -p 16 --ss fielder.ss --exon fielder.exon 201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta fielder.idx
+    """
+    log: "../intermediate_data/snakemake_intermediate_data/hisat.log"
+
+rule hisat_align:
+    output: "../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam"
+    input: 
+        index = "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx", 
+        read_1 = "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+        read_2 =  "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+    shell: r"""
+    source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 # source hisat2 
+    source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
+    hisat2 -x f{input.index} -p 16 -1 {input.read_1} -2 {input.read_1} | \
+    samtools view -bS > ../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam
+    """"
 
