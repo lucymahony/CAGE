@@ -190,5 +190,14 @@ rule hisat_align:
     """"
 
 rule report_all_alignments:
-    output: ""
-    IS2 IS3 SP1 SP2 SP3 RO1 RO2 RO3 LE1 LE2 LE3
+    output: "../intermediate_data/snakemake_intermediate_data/all_alignemnts_report.txt"
+    # Maybe the input is the logs?
+    
+    input: 
+        star: 
+        bowtie: 
+        bowtie_sensitive: 
+        bwa: 
+        hisat:
+    
+    
