@@ -190,11 +190,18 @@ rule hisat_align:
     samtools view -bS > ../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam
     """"
 
+
 rule alignment_statistics:
-    output: "../intermediate_data/snakemake_intermediate_data/{aligner}.txt"
+    output: "../intermediate_data/snakemake_intermediate_data/{aligner}_{tissue}.txt"
     input: "../intermediate_data/snakemake_intermediate_data/{aligner}_{tissue}.bam"
     threads: 1
-    log"
+    log: "../intermediate_data/snakemake_intermediate_data/logs/alignment_statistic.log"
+    shell r"""
+    source package 9c36c962-3ae5-4f05-a17b-967eb76f9472 # source bamtools version 2.5.1
+    bamtools stats -in {input} > {output} # Not sureIcan do this with piping into output
+    """
+
+
 rule report_all_alignments:
     output: "../intermediate_data/snakemake_intermediate_data/all_alignemnts_report.txt"
     # Maybe the input is the logs?
