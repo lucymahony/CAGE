@@ -119,37 +119,48 @@ rule report_all_index:
 rule star_align:
     output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_mapped_reads")
     input:
-        star_index_directory: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index")
-        read_1: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz" # Not sure if these should be named like this or something trim 
+        star_index_directory: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index"),
+        read_1: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
         read_2: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
     threads: 16
-    log:
-    shell: """
+    log: "../intermediate_data/snakemake_intermediate_data/logs/star_align.log"
+    shell: r"""
     source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
-
+    STAR --runThreadN {threads} --genomeDir {input.star_index_directory} --readFilesIn {input.read_1} {input.read_2}
+     --readFilesCommand zcat --outFileNamePrefix {output} --outSAMtype BAM SortedByCoordinate --limitGenomeGenerateRAM 1001110470922 --limitBAMsortRAM 3000000000
     """
-
-mapfile -t TISSUES < tissue.list
-tissue=${TISSUES[$SLURM_PROCID]}
-
-read_1=../../intermediate_data/trimmed_reads/read_1/trimmed_${tissue}_1P.fastq.gz
-read_2=../../intermediate_data/trimmed_reads/read_2/trimmed_${tissue}_2P.fastq.gz
-
-THREADS=16
-GENOME_DIR=../../intermediate_data/genome_directory/
-OUT_DIR=../../intermediate_data/mapped_reads/
-
-
-STAR --runThreadN $THREADS --genomeDir $GENOME_DIR --readFilesIn $read_1 $read_2 --readFilesCommand zcat --outFileNamePrefix $OUT_DIR --outSAMtype BAM SortedByCoordinate --limitGenomeGenerateRAM 1001110470922 --limitBAMsortRAM 3000000000
-
-
-echo "Done mapping for $tissue"
-
-
 
 
 rule bowtie_align:
+    output: "../intermediate_data/snakemake_intermediate_data/bowtie_${myfile}.bam"
+    input:
+        bowtie_index: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx",
+        read_1:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
+        read_2:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
+    threads: 16
+    log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align.log"
+    shell: r""" 
+        source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
+        source package 29a74b59-88fc-4453-a30b-1310b34910b9 # source bowtie2 2.4.1
+        bowtie2 -p {threads} -x {input.bowtie_index} -1  {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
+        """
+
+    
+
 rule bowtie_align_sensitive:
+output: "../intermediate_data/snakemake_intermediate_data/bowtie_sensitive_${myfile}.bam"
+    input:
+        bowtie_index: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx",
+        read_1:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
+        read_2:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
+    threads: 16
+    log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align_sensitive.log"
+    shell: r""" 
+        source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
+        source package 29a74b59-88fc-4453-a30b-1310b34910b9 # source bowtie2 2.4.1
+        bowtie2 -p {threads} --met 1 --very-sensitive -x {input.bowtie_index} -1  {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
+        """
+
 rule bwa_align:
 
 rule hisat_align:
