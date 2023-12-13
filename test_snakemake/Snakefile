@@ -16,14 +16,11 @@ rule trim_reads:
         """
 
 
-
 rule fastqc:
     input:  "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
     output:
         html="../intermediate_data/snakemake_intermediate_data/{myfile}_fastqc.html",
         zip="../intermediate_data/snakemake_intermediate_data/{myfile}_fastqc.zip"
-    params:
-        extra="" # any extra parameters for fastqc
     threads: 2 # adjust as needed
     log: "logs/fastqc.log"
     shell:
@@ -35,39 +32,20 @@ rule fastqc:
         basename_without_ext() {{
             base=$(basename "$1")
             base=${{base//.gz/}}
-            base=${{base//.bz2/}}
-            base=${{base//.txt/}}
             base=${{base//.fastq/}}
             base=${{base//.fq/}}
-            base=${{base//.sam/}}
-            base=${{base//.bam/}}
             echo "$base"
         }}
-
-        # Check for multiple input files
-        if [ "${{#input[@]}}" -gt 1 ]; then
-            echo "Got multiple input files, I don't know how to process them!"
-            exit 1
-        fi
-
         # Create temporary directory
         tempdir=$(mktemp -d)
         trap "rm -rf $tempdir" EXIT
 
-        # Run fastqc
-        fastqc \
-            --threads {threads} \
-            --memory $mem_mb \
-            {params.extra} \
-            --outdir $tempdir \
-            {input} \
-            &> {log}
+        fastqc --threads {threads} --memory $mem_mb {params.extra} --outdir $tempdir {input} &> {log}
 
         # Move outputs to proper location
         output_base=$(basename_without_ext {input})
         html_path="$tempdir/${{output_base}}_fastqc.html"
         zip_path="$tempdir/${{output_base}}_fastqc.zip"
-
         mv $html_path {output.html}
         mv $zip_path {output.zip}
         """
