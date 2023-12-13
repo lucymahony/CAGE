@@ -182,6 +182,7 @@ rule hisat_align:
         read_1 = "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
         read_2 =  "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
     threads: 16
+    log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_align.log"
     shell: r"""
     source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 # source hisat2 
     source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
@@ -189,9 +190,16 @@ rule hisat_align:
     samtools view -bS > ../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam
     """"
 
+rule alignment_statistics:
+    output: "../intermediate_data/snakemake_intermediate_data/{aligner}.txt"
+    input: "../intermediate_data/snakemake_intermediate_data/{aligner}_{tissue}.bam"
+    threads: 1
+    log"
 rule report_all_alignments:
     output: "../intermediate_data/snakemake_intermediate_data/all_alignemnts_report.txt"
     # Maybe the input is the logs?
+    # or create a rule that returns the statistics and then do this for all of them? 
+    # bamtools stats -in bwa_${tissue}.bam
     
     input: 
         star: 
