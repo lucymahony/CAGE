@@ -71,7 +71,7 @@ rule star_index:
     --runThreadN {threads} 
     --runMode genomeGenerate 
     --genomeFastaFiles {input.reference_fasta} 
-    {input.reference_gtf} 
+    --sjdbGTFfile {input.reference_gtf} 
     --sjdbOverhang 100 
     --limitGenomeGenerateRAM 100111047092 
     --outTmpDir $tmpdir/STARtmp 
