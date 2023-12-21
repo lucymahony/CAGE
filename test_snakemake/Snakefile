@@ -84,7 +84,6 @@ rule star_index:
             --genomeDir {output} 
         """
 
-fielder_bowtie_index_201216_Fielder_pseudomolecules_V1+unanchored_contigs.idx
 
 rule bowtie_index:
     output: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.1.bt2" # Note i am not sure this is the correct output 
