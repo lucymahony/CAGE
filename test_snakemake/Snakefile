@@ -51,7 +51,7 @@ rule fastqc:
         mv $zip_path {output.zip}
         """
 
-INDEXING RULES  # genome = ../intermediate_data/snakemake_intermediate_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.star_index
+#INDEXING RULES  # genome = ../intermediate_data/snakemake_intermediate_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.star_index
 rule star_index:
     input:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  # Replace with your actual fasta file path
