@@ -55,8 +55,8 @@ rule fastqc:
 rule star_index:
     output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index") # Output is a directory 
     input:
-        reference_fasta = "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
-        reference_gtf = "../../input_data/fielder_genome_data/fielder.release.gtf"
+        reference_fasta = "../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
+        reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
     threads: 16
     log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.log"
     shell: r""" source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
@@ -67,7 +67,7 @@ rule star_index:
 
 # rule bowtie_index:
 #     output: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx" # Note i am not sure this is the correct output 
-#     input: "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
+#     input: "../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
 #     threads: 16
 #     log:  "../intermediate_data/snakemake_intermediate_data/logs/bowtie_index.log"
 #     shell: r""" source package 29a74b59-88fc-4453-a30b-1310b34910b9 # bowtie2 2.4.1
@@ -76,7 +76,7 @@ rule star_index:
 
 # rule bwa_index:
 #     output: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx" # Note i am not sure here how to make the output be this. 
-#     input: "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
+#     input: "../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
 #     threads: 16
 #     log:  "../intermediate_data/snakemake_intermediate_data/logs/bwa_index.log"
 #     shell:r"""
@@ -87,8 +87,8 @@ rule star_index:
 # rule hisat_index:
 #     output: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
 #     input:
-#         reference_fasta = "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
-#         reference_gtf = "../../input_data/fielder_genome_data/fielder.release.gtf"
+#         reference_fasta = "../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
+#         reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
 #     threads: 16
 #     log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_index.log"
 #     shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
