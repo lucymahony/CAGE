@@ -54,7 +54,7 @@ rule fastqc:
 # INDEXING RULES 
 
 rule star_index:
-    output: "../intermediate_data/snakemake_intermediate_data/fielder_star_index/fielder_indexing.out" # Output is a directory 
+    output: "../intermediate_data/snakemake_intermediate_data/fielder_star_index/fielder_indexing.out" 
     input:
         reference_fasta = "../input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
         reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
@@ -73,7 +73,7 @@ rule star_index:
         echo "Creating directory $DIR."
         mkdir "$DIR"
     fi
-    STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir $DIR --genomeFastaFiles {input.reference_fasta} --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
+    STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir ../intermediate_data/snakemake_intermediate_data/fielder_star_index --genomeFastaFiles {input.reference_fasta} --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
     '''
 
 
