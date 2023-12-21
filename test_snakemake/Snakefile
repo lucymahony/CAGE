@@ -22,7 +22,7 @@ rule fastqc:
         html="../intermediate_data/snakemake_intermediate_data/{myfile}_fastqc.html",
         zip="../intermediate_data/snakemake_intermediate_data/{myfile}_fastqc.zip"
     threads: 2 # adjust as needed
-    log: "../intermediate_data/snakemake_intermediate_data/logs/fastqc.log"
+    log: "../intermediate_data/snakemake_intermediate_data/logs/fastqc.{myfile}.log"
     shell:
         """
         # Define memory per thread
