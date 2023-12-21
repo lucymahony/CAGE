@@ -79,33 +79,10 @@ rule star_index:
             --genomeFastaFiles {input.fasta} \
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100 \
-            --genomeDir {output} \
-            &> {log}
+            --limitGenomeGenerateRAM 100111047092 \
+            --genomeDir {output} 
         """
-# rule star_index:
-#     output: directory("../intermediate_data/snakemake_intermediate_data/{genome}.star_index")
-#     input:
-#         reference_fasta = "../input_data/fielder_genome_data/{genome}.fasta",
-#         reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
-#     threads: 16
-#     log: "../intermediate_data/snakemake_intermediate_data/logs/star_index_{genome}.log"
-#     shell: r'''
-#     source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
 
-#     # Create temporary directory
-#     #tmpdir=$(mktemp -d)
-#     #trap "rm -rf $tmpdir" EXIT
-#     # Run STAR 
-#     STAR 
-#     --runThreadN {threads} 
-#     --runMode genomeGenerate 
-#     --genomeFastaFiles {input.reference_fasta} 
-#     --sjdbGTFfile {input.reference_gtf} 
-#     --sjdbOverhang 100 
-#     --limitGenomeGenerateRAM 100111047092 
-#     #--outTmpDir $tmpdir/STARtmp
-#     --genomeDir {output}
-#     '''
 
 
 
