@@ -62,7 +62,7 @@ rule star_index:
         extra = "",  # Add any extra parameters you want to pass to STAR
         sjdbOverhang = ""  # Add sjdbOverhang value if needed, or leave as an empty string
     threads: 16  # Adjust the number of threads as required
-    log: "logs/star_index.log"  # Replace with your actual log file path
+    log: "logs/star_index.{genome}.log"  # Replace with your actual log file path
     shell:
         """
         sjdb_overhang=""
