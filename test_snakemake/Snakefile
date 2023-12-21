@@ -74,7 +74,7 @@ rule star_index:
     {input.reference_gtf} 
     --sjdbOverhang 100 
     --limitGenomeGenerateRAM 100111047092 
-    --outTmpDir {tmpdir}/STARtmp 
+    --outTmpDir $tmpdir/STARtmp 
     --genomeDir {output}
     '''
 
