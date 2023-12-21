@@ -51,7 +51,7 @@ rule fastqc:
         mv $zip_path {output.zip}
         """
 
-# INDEXING RULES  # genome = ../intermediate_data/snakemake_intermediate_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.star_index
+INDEXING RULES  # genome = ../intermediate_data/snakemake_intermediate_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.star_index
 rule star_index:
     input:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  # Replace with your actual fasta file path
@@ -72,7 +72,8 @@ rule star_index:
             echo "Creating directory {output}"
             mkdir "{output}"
         fi
-        source package /tgac/software/testing/bin/STAR-2.3.0
+        set +u; source package /tgac/software/testing/bin/STAR-2.3.0; set -u
+        
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
@@ -83,18 +84,15 @@ rule star_index:
             --genomeDir {output} 
         """
 
-
-
-
-
-# rule bowtie_index:
-#     output: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx" # Note i am not sure this is the correct output 
-#     input: "../input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
-#     threads: 16
-#     log:  "../intermediate_data/snakemake_intermediate_data/logs/bowtie_index.log"
-#     shell: r""" source package 29a74b59-88fc-4453-a30b-1310b34910b9 # bowtie2 2.4.1
-#     bowtie2-build {input} {output} --threads={threads}
-#     """
+rule bowtie_index:
+    output: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx" # Note i am not sure this is the correct output 
+    input: "../input_data/fielder_genome_data/_{genome}.fasta"
+    threads: 16
+    log:  "../intermediate_data/snakemake_intermediate_data/logs/bowtie_index_{genome}.log"
+    shell: r"""
+    source package 29a74b59-88fc-4453-a30b-1310b34910b9 # bowtie2 2.4.1
+    bowtie2-build {input} {output} --threads={threads}
+    """
 
 # rule bwa_index:
 #     output: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx" # Note i am not sure here how to make the output be this. 
