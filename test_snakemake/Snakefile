@@ -72,6 +72,7 @@ rule star_index:
             echo "Creating directory {output}"
             mkdir "{output}"
         fi
+        source package /tgac/software/testing/bin/STAR-2.3.0
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
