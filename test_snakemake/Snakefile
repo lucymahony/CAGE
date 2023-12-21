@@ -86,13 +86,23 @@ rule star_index:
 
 
 rule bowtie_index:
-    output: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.1.bt2" # Note i am not sure this is the correct output 
+    params:
+        basename="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx"
+
     input: "../input_data/fielder_genome_data/_{genome}.fasta"
+    output: 
+        output1="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.1.bt2" 
+        output2="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.2.bt2"
+        output3="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.1.bt2" 
+        output4="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.2.bt2"
+        outputrev1="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.1.bt2" 
+        outputrev2="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.2.bt2"
+
     threads: 16
     log:  "../intermediate_data/snakemake_intermediate_data/logs/bowtie_index_{genome}.log"
     shell: r"""
     source package 29a74b59-88fc-4453-a30b-1310b34910b9 # bowtie2 2.4.1
-    bowtie2-build {input} {output} --threads={threads}
+    bowtie2-build {input} {params.basename} --threads={threads}
     """
 
 # rule bwa_index:
