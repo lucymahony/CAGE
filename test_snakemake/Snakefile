@@ -51,32 +51,33 @@ rule fastqc:
         mv $zip_path {output.zip}
         """
 
-# INDEXING RULES 
+# INDEXING RULES  # genome = 201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta
 
 rule star_index:
-    output: "../intermediate_data/snakemake_intermediate_data/fielder_star_index/fielder_indexing.out" 
+    output: directory("../intermediate_data/snakemake_intermediate_data/{genome}_star_index")
     input:
-        reference_fasta = "../input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
+        reference_fasta = "../input_data/fielder_genome_data/{genome}.fasta",
         reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
     threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.log"
+    log: "../intermediate_data/snakemake_intermediate_data/logs/star_index_{genome}.log"
     shell: r'''
     source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
-    # Define the directory name
-    DIR="../intermediate_data/snakemake_intermediate_data/fielder_star_index"
-    # Check if the directory exists
-    if [ -d "$DIR" ]; then
-        echo "Directory $DIR exists."
-    else
-        # Create the directory
-        echo "Creating directory $DIR."
-        mkdir "$DIR"
-    fi
-    STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir $DIR --genomeFastaFiles {input.reference_fasta} --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
-    out_path="$DIR/fielder_indexing.out"
-    mv $out_path {output}
 
+    # Create temporary directory
+    tmpdir=$(mktemp -d)
+    trap "rm -rf $tmpdir" EXIT
+    # Run STAR 
+    STAR 
+    --runThreadN {threads} 
+    --runMode genomeGenerate 
+    --genomeFastaFiles {snakemake.input.fasta}
+    {sjdb_overhang} 
+    {gtf} 
+    --outTmpDir {tmpdir}/STARtmp
+    --genomeDir {output}
     '''
+
+
 
 
 # rule bowtie_index:
