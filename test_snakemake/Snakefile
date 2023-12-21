@@ -52,167 +52,167 @@ rule fastqc:
 
 # INDEXING RULES 
 
-rule star_index:
-    output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index") # Output is a directory 
-    input:
-        reference_fasta = "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
-        reference_gtf = "../../input_data/fielder_genome_data/fielder.release.gtf"
-    threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.log"
-    shell: r""" source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
-    STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {output} --genomeFastaFiles {input.reference_fasta} \
-     --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
-    """
+# rule star_index:
+#     output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index") # Output is a directory 
+#     input:
+#         reference_fasta = "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
+#         reference_gtf = "../../input_data/fielder_genome_data/fielder.release.gtf"
+#     threads: 16
+#     log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.log"
+#     shell: r""" source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
+#     STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {output} --genomeFastaFiles {input.reference_fasta} \
+#      --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
+#     """
 
 
-rule bowtie_index:
-    output: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx" # Note i am not sure this is the correct output 
-    input: "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
-    threads: 16
-    log:  "../intermediate_data/snakemake_intermediate_data/logs/bowtie_index.log"
-    shell: r""" source package 29a74b59-88fc-4453-a30b-1310b34910b9 # bowtie2 2.4.1
-    bowtie2-build {input} {output} --threads={threads}
-    """
+# rule bowtie_index:
+#     output: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx" # Note i am not sure this is the correct output 
+#     input: "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
+#     threads: 16
+#     log:  "../intermediate_data/snakemake_intermediate_data/logs/bowtie_index.log"
+#     shell: r""" source package 29a74b59-88fc-4453-a30b-1310b34910b9 # bowtie2 2.4.1
+#     bowtie2-build {input} {output} --threads={threads}
+#     """
 
-rule bwa_index:
-    output: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx" # Note i am not sure here how to make the output be this. 
-    input: "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
-    threads: 16
-    log:  "../intermediate_data/snakemake_intermediate_data/logs/bwa_index.log"
-    shell:r"""
-    source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
-    bwa index {input} 
-    """
+# rule bwa_index:
+#     output: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx" # Note i am not sure here how to make the output be this. 
+#     input: "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
+#     threads: 16
+#     log:  "../intermediate_data/snakemake_intermediate_data/logs/bwa_index.log"
+#     shell:r"""
+#     source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
+#     bwa index {input} 
+#     """
 
-rule hisat_index:
-    output: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
-    input:
-        reference_fasta = "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
-        reference_gtf = "../../input_data/fielder_genome_data/fielder.release.gtf"
-    threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_index.log"
-    shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
-        hisat2_extract_splice_sites.py {input.reference_gtf} > fielder.ss
-        hisat2_extract_exons.py {input.reference_gtf} > fielder.exon
-        hisat2-build -p {threads} --ss fielder.ss --exon fielder.exon {input.reference_fasta} {output}
-    """
-
-
-rule report_all_index:
-    output: "../intermediate_data/snakemake_intermediate_data/all_indexes_report.txt"
-    input:
-        star: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index"),
-        bowtie: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx", # Note i am not sure this is the correct output 
-        bwa: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx", # Note i am not sure here how to make the output be this. 
-        hisat: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
-    shell: r"""
-            for file in {input.star} {input.bowtie} {input.bwa} {input.hisat}
-            do 
-                if test -f "$file"
-                then 
-                echo "$file exists " >> {output}
-                fi
-            done
-            """
-
-`# ALIGNING RULES 
-rule star_align:
-    output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_mapped_reads.{myfile}")
-    input:
-        star_index_directory: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index"),
-        read_1: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
-        read_2: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
-    threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/star_align.log"
-    shell: r"""
-    source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
-    STAR --runThreadN {threads} --genomeDir {input.star_index_directory} --readFilesIn {input.read_1} {input.read_2}
-     --readFilesCommand zcat --outFileNamePrefix {output} --outSAMtype BAM SortedByCoordinate --limitGenomeGenerateRAM 1001110470922 --limitBAMsortRAM 3000000000
-    """
+# rule hisat_index:
+#     output: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
+#     input:
+#         reference_fasta = "../../input_data/fielder_genome_data/201215_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
+#         reference_gtf = "../../input_data/fielder_genome_data/fielder.release.gtf"
+#     threads: 16
+#     log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_index.log"
+#     shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
+#         hisat2_extract_splice_sites.py {input.reference_gtf} > fielder.ss
+#         hisat2_extract_exons.py {input.reference_gtf} > fielder.exon
+#         hisat2-build -p {threads} --ss fielder.ss --exon fielder.exon {input.reference_fasta} {output}
+#     """
 
 
-rule bowtie_align:
-    output: "../intermediate_data/snakemake_intermediate_data/bowtie_${myfile}.bam"
-    input:
-        bowtie_index: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx",
-        read_1:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
-        read_2:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
-    threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align.log"
-    shell: r""" 
-        source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
-        source package 29a74b59-88fc-4453-a30b-1310b34910b9 # source bowtie2 2.4.1
-        bowtie2 -p {threads} -x {input.bowtie_index} -1  {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
-        """
+# rule report_all_index:
+#     output: "../intermediate_data/snakemake_intermediate_data/all_indexes_report.txt"
+#     input:
+#         star: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index"),
+#         bowtie: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx", # Note i am not sure this is the correct output 
+#         bwa: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx", # Note i am not sure here how to make the output be this. 
+#         hisat: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
+#     shell: r"""
+#             for file in {input.star} {input.bowtie} {input.bwa} {input.hisat}
+#             do 
+#                 if test -f "$file"
+#                 then 
+#                 echo "$file exists " >> {output}
+#                 fi
+#             done
+#             """
+
+# `# ALIGNING RULES 
+# rule star_align:
+#     output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_mapped_reads.{myfile}")
+#     input:
+#         star_index_directory: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index"),
+#         read_1: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
+#         read_2: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
+#     threads: 16
+#     log: "../intermediate_data/snakemake_intermediate_data/logs/star_align.log"
+#     shell: r"""
+#     source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
+#     STAR --runThreadN {threads} --genomeDir {input.star_index_directory} --readFilesIn {input.read_1} {input.read_2}
+#      --readFilesCommand zcat --outFileNamePrefix {output} --outSAMtype BAM SortedByCoordinate --limitGenomeGenerateRAM 1001110470922 --limitBAMsortRAM 3000000000
+#     """
+
+
+# rule bowtie_align:
+#     output: "../intermediate_data/snakemake_intermediate_data/bowtie_${myfile}.bam"
+#     input:
+#         bowtie_index: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx",
+#         read_1:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
+#         read_2:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
+#     threads: 16
+#     log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align.log"
+#     shell: r""" 
+#         source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
+#         source package 29a74b59-88fc-4453-a30b-1310b34910b9 # source bowtie2 2.4.1
+#         bowtie2 -p {threads} -x {input.bowtie_index} -1  {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
+#         """
 
     
 
-rule bowtie_align_sensitive:
-output: "../intermediate_data/snakemake_intermediate_data/bowtie_sensitive_${myfile}.bam"
-    input:
-        bowtie_index: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx",
-        read_1:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
-        read_2:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
-    threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align_sensitive.log"
-    shell: r""" 
-        source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
-        source package 29a74b59-88fc-4453-a30b-1310b34910b9 # source bowtie2 2.4.1
-        bowtie2 -p {threads} --met 1 --very-sensitive -x {input.bowtie_index} -1  {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
-        """
+# rule bowtie_align_sensitive:
+# output: "../intermediate_data/snakemake_intermediate_data/bowtie_sensitive_${myfile}.bam"
+#     input:
+#         bowtie_index: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx",
+#         read_1:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
+#         read_2:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
+#     threads: 16
+#     log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align_sensitive.log"
+#     shell: r""" 
+#         source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
+#         source package 29a74b59-88fc-4453-a30b-1310b34910b9 # source bowtie2 2.4.1
+#         bowtie2 -p {threads} --met 1 --very-sensitive -x {input.bowtie_index} -1  {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
+#         """
 
-rule bwa_align:
-    output: "../intermediate_data/snakemake_intermediate_data/bwa_${myfile}.bam"
-    input:
-        bwa_index: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx" 
-        read_1:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
-        read_2:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
-    threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align_sensitive.log"
-    shell: r""" 
-    source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
-    source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
-    bwa mem {input.bwa_index} {input.read_1} {input.read_2} | samtools view -bS > {output}
-    """
+# rule bwa_align:
+#     output: "../intermediate_data/snakemake_intermediate_data/bwa_${myfile}.bam"
+#     input:
+#         bwa_index: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx" 
+#         read_1:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
+#         read_2:"../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz"
+#     threads: 16
+#     log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align_sensitive.log"
+#     shell: r""" 
+#     source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
+#     source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
+#     bwa mem {input.bwa_index} {input.read_1} {input.read_2} | samtools view -bS > {output}
+#     """
 
-rule hisat_align:
-    output: "../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam"
-    input: 
-        index = "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx", 
-        read_1 = "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
-        read_2 =  "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
-    threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_align.log"
-    shell: r"""
-    source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 # source hisat2 
-    source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
-    hisat2 -x {input.index} -p {threads} -1 {input.read_1} -2 {input.read_1} | \
-    samtools view -bS > ../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam
-    """
-
-
-rule alignment_statistics:
-    output: "../intermediate_data/snakemake_intermediate_data/{aligner}_{tissue}.txt"
-    input: "../intermediate_data/snakemake_intermediate_data/{aligner}_{tissue}.bam"
-    threads: 1
-    log: "../intermediate_data/snakemake_intermediate_data/logs/alignment_statistic.log"
-    shell: r"""
-    source package 9c36c962-3ae5-4f05-a17b-967eb76f9472 # source bamtools version 2.5.1
-    bamtools stats -in {input} > {output} # Not sureIcan do this with piping into output
-    """
-
-
-# rule report_all_alignments:
-#     output: "../intermediate_data/snakemake_intermediate_data/all_alignemnts_report.txt"
-#     # Maybe the input is the logs?
-#     # or create a rule that returns the statistics and then do this for all of them? 
-#     # bamtools stats -in bwa_${tissue}.bam
-    
+# rule hisat_align:
+#     output: "../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam"
 #     input: 
-#         star: 
-#         bowtie: 
-#         bowtie_sensitive: 
-#         bwa: 
-#         hisat:
+#         index = "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx", 
+#         read_1 = "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+#         read_2 =  "../intermediate_data/snakemake_intermediate_data/{sample}.trimmed.fastq.gz"
+#     threads: 16
+#     log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_align.log"
+#     shell: r"""
+#     source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 # source hisat2 
+#     source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
+#     hisat2 -x {input.index} -p {threads} -1 {input.read_1} -2 {input.read_1} | \
+#     samtools view -bS > ../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam
+#     """
+
+
+# rule alignment_statistics:
+#     output: "../intermediate_data/snakemake_intermediate_data/{aligner}_{tissue}.txt"
+#     input: "../intermediate_data/snakemake_intermediate_data/{aligner}_{tissue}.bam"
+#     threads: 1
+#     log: "../intermediate_data/snakemake_intermediate_data/logs/alignment_statistic.log"
+#     shell: r"""
+#     source package 9c36c962-3ae5-4f05-a17b-967eb76f9472 # source bamtools version 2.5.1
+#     bamtools stats -in {input} > {output} # Not sureIcan do this with piping into output
+#     """
+
+
+# # rule report_all_alignments:
+# #     output: "../intermediate_data/snakemake_intermediate_data/all_alignemnts_report.txt"
+# #     # Maybe the input is the logs?
+# #     # or create a rule that returns the statistics and then do this for all of them? 
+# #     # bamtools stats -in bwa_${tissue}.bam
+    
+# #     input: 
+# #         star: 
+# #         bowtie: 
+# #         bowtie_sensitive: 
+# #         bwa: 
+# #         hisat:
     
     
