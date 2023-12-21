@@ -195,23 +195,23 @@ rule alignment_statistics:
     input: "../intermediate_data/snakemake_intermediate_data/{aligner}_{tissue}.bam"
     threads: 1
     log: "../intermediate_data/snakemake_intermediate_data/logs/alignment_statistic.log"
-    shell r"""
+    shell: r"""
     source package 9c36c962-3ae5-4f05-a17b-967eb76f9472 # source bamtools version 2.5.1
     bamtools stats -in {input} > {output} # Not sureIcan do this with piping into output
     """
 
 
-rule report_all_alignments:
-    output: "../intermediate_data/snakemake_intermediate_data/all_alignemnts_report.txt"
-    # Maybe the input is the logs?
-    # or create a rule that returns the statistics and then do this for all of them? 
-    # bamtools stats -in bwa_${tissue}.bam
+# rule report_all_alignments:
+#     output: "../intermediate_data/snakemake_intermediate_data/all_alignemnts_report.txt"
+#     # Maybe the input is the logs?
+#     # or create a rule that returns the statistics and then do this for all of them? 
+#     # bamtools stats -in bwa_${tissue}.bam
     
-    input: 
-        star: 
-        bowtie: 
-        bowtie_sensitive: 
-        bwa: 
-        hisat:
+#     input: 
+#         star: 
+#         bowtie: 
+#         bowtie_sensitive: 
+#         bwa: 
+#         hisat:
     
     
