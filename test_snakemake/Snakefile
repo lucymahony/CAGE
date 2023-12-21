@@ -64,7 +64,6 @@ rule star_index:
     source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
     # Define the directory name
     DIR="../intermediate_data/snakemake_intermediate_data/fielder_star_index"
-
     # Check if the directory exists
     if [ -d "$DIR" ]; then
         echo "Directory $DIR exists."
@@ -73,7 +72,10 @@ rule star_index:
         echo "Creating directory $DIR."
         mkdir "$DIR"
     fi
-    STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir ../intermediate_data/snakemake_intermediate_data/fielder_star_index --genomeFastaFiles {input.reference_fasta} --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
+    STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir $DIR --genomeFastaFiles {input.reference_fasta} --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
+    out_path="$DIR/fielder_indexing.out"
+    mv $out_path {output}
+
     '''
 
 
