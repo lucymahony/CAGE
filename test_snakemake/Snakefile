@@ -61,15 +61,22 @@ rule star_index:
     params:
         extra = "",  # Add any extra parameters you want to pass to STAR
     threads: 16  # Adjust the number of threads as required
-    log: "logs/star_index.{genome}.log"  # Replace with your actual log file path
+    log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.{genome}.log"  # Replace with your actual log file path
     shell:
         """
-        mkdir {output}
+            # Check if the directory exists
+        if [ -d {output} ]; then
+            echo "Directory {output} exists."
+        else
+            # Create the directory
+            echo "Creating directory {output}"
+            mkdir "{output}"
+        fi
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
             --genomeFastaFiles {input.fasta} \
-            --sjdbGTFfile {input.gtf}
+            --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100 \
             {params.extra} \
             --outTmpDir {output}/STARtmp \
