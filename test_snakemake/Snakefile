@@ -170,7 +170,7 @@ rule bwa_align:
     log: "../intermediate_data/snakemake_intermediate_data/logs/bowtie_align_sensitive.log"
     shell: r""" 
     source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
-s   ource package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
+    source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
     bwa mem {input.bwa_index} {input.read_1} {input.read_2} | samtools view -bS > {output}
     """
 
@@ -187,7 +187,7 @@ rule hisat_align:
     source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
     hisat2 -x {input.index} -p {threads} -1 {input.read_1} -2 {input.read_1} | \
     samtools view -bS > ../intermediate_data/snakemake_intermediate_data/{sample}.hisat.bam
-    """"
+    """
 
 
 rule alignment_statistics:
