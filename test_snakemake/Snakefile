@@ -60,22 +60,17 @@ rule star_index:
         "../intermediate_data/snakemake_intermediate_data/{genome}.star_index"  # Replace with your actual output directory path
     params:
         extra = "",  # Add any extra parameters you want to pass to STAR
-        sjdbOverhang = ""  # Add sjdbOverhang value if needed, or leave as an empty string
     threads: 16  # Adjust the number of threads as required
     log: "logs/star_index.{genome}.log"  # Replace with your actual log file path
     shell:
         """
-        gtf_option=""
-        if [ -n "{input.gtf}" ]; then
-            gtf_option="--sjdbGTFfile {input.gtf}"
-        fi
 
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
             --genomeFastaFiles {input.fasta} \
-            100 \
-            {gtf_option} \
+            --sjdbGTFfile {input.gtf}
+            --sjdbOverhang 100 \
             {params.extra} \
             --outTmpDir {output}/STARtmp \
             --genomeDir {output} \
