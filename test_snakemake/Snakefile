@@ -116,7 +116,7 @@ rule report_all_index:
 
 `# ALIGNING RULES 
 rule star_align:
-    output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_mapped_reads")
+    output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_mapped_reads.{myfile}")
     input:
         star_index_directory: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index"),
         read_1: "../intermediate_data/snakemake_intermediate_data/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
