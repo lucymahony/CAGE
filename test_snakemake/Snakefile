@@ -70,10 +70,11 @@ rule star_index:
     STAR 
     --runThreadN {threads} 
     --runMode genomeGenerate 
-    --genomeFastaFiles {snakemake.input.fasta}
-    {sjdb_overhang} 
-    {gtf} 
-    --outTmpDir {tmpdir}/STARtmp
+    --genomeFastaFiles {input.reference_fasta} 
+    {input.reference_gtf} 
+    --sjdbOverhang 100 
+    --limitGenomeGenerateRAM 100111047092 
+    --outTmpDir {tmpdir}/STARtmp 
     --genomeDir {output}
     '''
 
