@@ -108,7 +108,8 @@ rule report_all_index:
     shell: r"""
             for file in {input.star} {input.bowtie} {input.bwa} {input.hisat}
             do 
-                if test -f $file: then 
+                if test -f "$file"
+                then 
                 echo "$file exists " >> {output}
                 fi
             done
