@@ -51,10 +51,10 @@ rule fastqc:
         mv $zip_path {output.zip}
         """
 
-# INDEXING RULES  # genome = 201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta
+# INDEXING RULES  # genome = ../intermediate_data/snakemake_intermediate_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.star_index
 
 rule star_index:
-    output: directory("../intermediate_data/snakemake_intermediate_data/{genome}_star_index")
+    output: directory("../intermediate_data/snakemake_intermediate_data/{genome}.star_index")
     input:
         reference_fasta = "../input_data/fielder_genome_data/{genome}.fasta",
         reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
