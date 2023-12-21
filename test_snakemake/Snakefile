@@ -64,8 +64,8 @@ rule star_index:
     source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
 
     # Create temporary directory
-    tmpdir=$(mktemp -d)
-    trap "rm -rf $tmpdir" EXIT
+    #tmpdir=$(mktemp -d)
+    #trap "rm -rf $tmpdir" EXIT
     # Run STAR 
     STAR 
     --runThreadN {threads} 
@@ -74,7 +74,7 @@ rule star_index:
     --sjdbGTFfile {input.reference_gtf} 
     --sjdbOverhang 100 
     --limitGenomeGenerateRAM 100111047092 
-    --outTmpDir $tmpdir/STARtmp 
+    #--outTmpDir $tmpdir/STARtmp
     --genomeDir {output}
     '''
 
