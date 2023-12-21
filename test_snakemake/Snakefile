@@ -64,7 +64,7 @@ rule star_index:
     log: "logs/star_index.{genome}.log"  # Replace with your actual log file path
     shell:
         """
-
+        mkdir {output}
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
