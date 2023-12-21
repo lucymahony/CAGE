@@ -60,7 +60,8 @@ rule star_index:
         reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
     threads: 16
     log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.log"
-    shell: r''' source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
+    shell: r'''
+    source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
     STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {output} --genomeFastaFiles {input.reference_fasta} --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
     '''
 
