@@ -54,7 +54,7 @@ rule fastqc:
 # INDEXING RULES 
 
 rule star_index:
-    output: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index") # Output is a directory 
+    output: "../intermediate_data/snakemake_intermediate_data/fielder_star_index/fielder_indexing.out" # Output is a directory 
     input:
         reference_fasta = "../input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
         reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
