@@ -73,7 +73,7 @@ rule star_index:
         echo "Creating directory $DIR."
         mkdir "$DIR"
     fi
-    STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {output} --genomeFastaFiles {input.reference_fasta} --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
+    STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir $DIR --genomeFastaFiles {input.reference_fasta} --sjdbGTFfile {input.reference_gtf} --sjdbOverhang 100 --limitGenomeGenerateRAM 100111047092
     '''
 
 
