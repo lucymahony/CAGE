@@ -92,7 +92,7 @@ rule bowtie_index:
     input: "../input_data/fielder_genome_data/{genome}.fasta"
     output: 
         multiext(
-            "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}",
+            "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.",
             "1.bt2",
             "2.bt2",
             "3.bt2",
