@@ -51,7 +51,7 @@ rule fastqc:
         mv $zip_path {output.zip}
         """
 
-#INDEXING RULES  # genome = ../intermediate_data/snakemake_intermediate_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs_star_index
+
 rule star_index:
     input:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  # Replace with your actual fasta file path
@@ -85,12 +85,12 @@ rule star_index:
 
 rule bowtie_index:
     params:
-        basename="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}"
+        basename="../intermediate_data/snakemake_intermediate_data/bowtie_index_{genome}"
 
     input: "../input_data/fielder_genome_data/{genome}.fasta"
     output: 
         multiext(
-            "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.",
+            "../intermediate_data/snakemake_intermediate_data/bowtie_index_{genome}.",
             "1.bt2",
             "2.bt2",
             "3.bt2",
@@ -107,15 +107,22 @@ rule bowtie_index:
     """
 
 
-# rule bwa_index:
-#     output: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx" # Note i am not sure here how to make the output be this. 
-#     input: "../input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta"
-#     threads: 16
-#     log:  "../intermediate_data/snakemake_intermediate_data/logs/bwa_index.log"
-#     shell:r"""
-#     source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
-#     bwa index {input} 
-#     """
+rule bwa_index:
+    output: 
+        multiext(
+            "../intermediate_data/snakemake_intermediate_data/bwa_index_{genome}",
+            ".amb",
+            ".ann",
+            ".bwt",
+            ".pac",
+            ".sa"), 
+    input: "../input_data/fielder_genome_data/{genome}.fasta"
+    threads: 16
+    log:  "../intermediate_data/snakemake_intermediate_data/logs/bwa_index_{genome}.log"
+    shell:r"""
+    source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
+    bwa index {input} 
+    """
 
 # rule hisat_index:
 #     output: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
