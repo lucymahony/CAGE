@@ -54,12 +54,12 @@ rule fastqc:
 
 rule star_index:
     input:
-        fasta = "../input_data/fielder_genome_data/{genome}.fasta",  # Replace with your actual fasta file path
-        gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  # Replace with your actual GTF file path, or remove if not needed
+        fasta = "../input_data/fielder_genome_data/{genome}.fasta",  
+        gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  
     output:
-        directory("../intermediate_data/snakemake_intermediate_data/{genome}_star_index")  # Replace with your actual output directory path
-    threads: 16  # Adjust the number of threads as required
-    log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.{genome}.log"  # Replace with your actual log file path
+        directory("../intermediate_data/snakemake_intermediate_data/{genome}_star_index")  
+    threads: 16 
+    log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.{genome}.log"  
     shell:
         """
             # Check if the directory exists
@@ -124,18 +124,19 @@ rule bwa_index:
     bwa index {input} 
     """
 
-# rule hisat_index:
-#     output: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
-#     input:
-#         reference_fasta = "../input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta",
-#         reference_gtf = "../input_data/fielder_genome_data/fielder.release.gtf"
-#     threads: 16
-#     log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_index.log"
-#     shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
-#         hisat2_extract_splice_sites.py {input.reference_gtf} > fielder.ss
-#         hisat2_extract_exons.py {input.reference_gtf} > fielder.exon
-#         hisat2-build -p {threads} --ss fielder.ss --exon fielder.exon {input.reference_fasta} {output}
-#     """
+
+rule hisat_index:
+    output: "../intermediate_data/snakemake_intermediate_data/{genome}_hisat.idx"
+    input:
+        fasta = "../input_data/fielder_genome_data/{genome}.fasta",  
+        gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  
+    threads: 16
+    log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_index.log"
+    shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
+        hisat2_extract_splice_sites.py {input.gtf} > fielder.ss
+        hisat2_extract_exons.py {input.gtf} > fielder.exon
+        hisat2-build -p {threads} --ss fielder.ss --exon fielder.exon {input.fasta} {output}
+    """
 
 
 # rule report_all_index:
