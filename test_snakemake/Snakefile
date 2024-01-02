@@ -89,7 +89,7 @@ rule bowtie_index:
     params:
         basename="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx"
 
-    input: "../input_data/fielder_genome_data/_{genome}.fasta"
+    input: "../input_data/fielder_genome_data/{genome}.fasta"
     output: 
         output1="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.1.bt2" ,
         output2="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.idx.2.bt2",
