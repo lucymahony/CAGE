@@ -51,15 +51,13 @@ rule fastqc:
         mv $zip_path {output.zip}
         """
 
-#INDEXING RULES  # genome = ../intermediate_data/snakemake_intermediate_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.star_index
+#INDEXING RULES  # genome = ../intermediate_data/snakemake_intermediate_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs_star_index
 rule star_index:
     input:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  # Replace with your actual fasta file path
         gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  # Replace with your actual GTF file path, or remove if not needed
     output:
-        "../intermediate_data/snakemake_intermediate_data/{genome}_star_index"  # Replace with your actual output directory path
-    params:
-        extra = "",  # Add any extra parameters you want to pass to STAR
+        directory("../intermediate_data/snakemake_intermediate_data/{genome}_star_index")  # Replace with your actual output directory path
     threads: 16  # Adjust the number of threads as required
     log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.{genome}.log"  # Replace with your actual log file path
     shell:
