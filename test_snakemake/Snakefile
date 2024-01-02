@@ -9,8 +9,8 @@ rule trim_reads:
         read_1_unpaired="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}_R1.unpaired.fastq.gz",
         read_2_unpaired="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}_R2.unpaired.fastq.gz"
     input: 
-        read_1 = expand("../input_data/cage_data/Fastq_R1/{tissue}{rep}_R1.fastq.gz", tissue = TISSUE, rep = REPS),
-        read_2 = expand("../input_data/cage_data/Fastq_R2/{tissue}{rep}_R2.fastq.gz", tissue = TISSUE, rep = REPS),
+        read_1 = expand("../input_data/cage_data/Fastq_R1/{tissue}{rep}_R1.fastq.gz"),
+        read_2 = expand("../input_data/cage_data/Fastq_R2/{tissue}{rep}_R2.fastq.gz"),
         solexa = "../input_data/solexa_sequencing_primers.fa",
     threads: 16 # Adjust later or maybe put in config file?
     log: "../intermediate_data/snakemake_intermediate_data/logs/{tissue}{rep}.trim_reads.log"
