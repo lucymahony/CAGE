@@ -4,16 +4,16 @@ REPS = ["1", "2", "3"]
 #
 rule trim_reads:
     output:
-        read_1="{outdir}/trimmed_{tissue}{rep}.1.fastq.gz",
-        read_2="{outdir}/trimmed_{tissue}{rep}.2.fastq.gz",
-        read_1_unpaired="{outdir}/trimmed_{tissue}{rep}.1.unpaired.fastq.gz",
-        read_2_unpaired="{outdir}trimmed_{tissue}{rep}.2.unpaired.fastq.gz"
+        read_1="{../intermediate_data/snakemake_intermediate_data}/trimmed_{tissue}{rep}.1.fastq.gz",
+        read_2="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}.2.fastq.gz",
+        read_1_unpaired="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}.1.unpaired.fastq.gz",
+        read_2_unpaired="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}.2.unpaired.fastq.gz"
     input: 
         read_1 = expand("../input_data/cage_data/Fastq_R1/{tissue}{rep}_R1.gz", tissue = TISSUE, rep = REPS),
         read_2 = expand("../input_data/cage_data/Fastq_R2/{tissue}{rep}_R2.fastq.gz", tissue = TISSUE, rep = REPS),
         solexa = "../input_data/solexa_sequencing_primers.fa",
     threads: 16 # Adjust later or maybe put in config file?
-    log: "{outdir}/logs/{tissue}{rep}.trim_reads.log"
+    log: "../intermediate_data/snakemake_intermediate_data/logs/{tissue}{rep}.trim_reads.log"
     shell: 
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423
