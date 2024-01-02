@@ -90,23 +90,24 @@ rule bowtie_index:
         basename="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}"
 
     input: "../input_data/fielder_genome_data/{genome}.fasta"
-    output:
+    output: 
         multiext(
-            "genome",
-            ".1.bt2l",
-            ".2.bt2l",
-            ".3.bt2l",
-            ".4.bt2l",
-            ".rev.1.bt2l",
-            ".rev.2.bt2l",
-        ),
-        
+            "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}",
+            "1.bt2",
+            "2.bt2",
+            "3.bt2",
+            "4.bt2",
+            "rev.1.bt2",
+            "rev.2.bt2",
+         )
+
     threads: 16
     log:  "../intermediate_data/snakemake_intermediate_data/logs/bowtie_index_{genome}.log"
     shell: r"""
     source package 29a74b59-88fc-4453-a30b-1310b34910b9 # bowtie2 2.4.1
     bowtie2-build {input} {params.basename} --threads={threads}
     """
+
 
 # rule bwa_index:
 #     output: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx" # Note i am not sure here how to make the output be this. 
