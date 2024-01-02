@@ -1,19 +1,41 @@
-rule make_up_results:
-	output: "the_results.txt"
-	shell: r"sleep 1m; touch the_results.txt"
-
+# All samples to processes 
+TISSUE = ["SP", "RO", "LE", "IS"]
+REPS = ["1", "2", "3"]
+#
 rule trim_reads:
+    output:
+        read_1="trimmed_{tissue}{rep}.1.fastq.gz",
+        read_2="trimmed_{tissue}{rep}.2.fastq.gz",
+        read_1_unpaired="trimmed_{tissue}{rep}.1.unpaired.fastq.gz",
+        read_2_unpaired="trimmed_{tissue}{rep}.2.unpaired.fastq.gz"
     input: 
-        read_1 = "../input_data/cage_data/Fastq_R1/{sample}_R1.fastq.gz",
-        read_2 = "../input_data/cage_data/Fastq_R2/{sample}_R2.fastq.gz",
+        read_1 = expand("../input_data/cage_data/Fastq_R1/{tissue}{rep}_R1.gz", tissue = TISSUE, rep = REPS),
+        read_2 = expand("../input_data/cage_data/Fastq_R2/{tissue}{rep}_R2.fastq.gz", tissue = TISSUE, rep = REPS),
         solexa = "../input_data/solexa_sequencing_primers.fa",
-    threads: 2 # Adjust later or maybe put in config file?
-    log: "../intermediate_data/snakemake_intermediate_data/logs/{sample}.trim_reads.log"
+    threads: 16 # Adjust later or maybe put in config file?
+    log: "../intermediate_data/snakemake_intermediate_data/logs/{tissue}{rep}.trim_reads.log"
     shell: 
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423
         trimmomatic PE -threads {threads}  {input.read_1} {input.read_2} -baseout ${sample} ILLUMINACLIP:../{input.solexa}:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
         """
+
+rule count_reads:
+    output: "{indir}.{myfile}.count"
+    input:  "{indir}/{myfile}.fastq.gz"
+    shell:
+        "echo $(( $(wc -l <{input}) / 4 )) > {output}"
+
+rule all_counts:
+    input:
+        untrimmed = expand("../input_data/cage_data/Fastq_R{read}/{tissue}{rep}_R{read}count", tissue = TISSUE, rep = REPS, read = ["1", "2"]),
+        trimmed = expand("../input_data/cage_data/Fastq_R{read}/{tissue}{rep}_R{read}_trimmed.count", tissue = TISSUE, rep = REPS, read = ["1", "2"]) # UNSURE OF THIS!
+    output:
+        untrimmed = "../intermediate_data/snakemake_intermediate_data/untrimmed_counts_concatenated.txt",
+        trimmed   = "../intermediate_data/snakemake_intermediate_data/trimmed_counts_concatenated.txt",
+    shell:
+        "cat {input.untrimmed} > {output.untrimmed} ; cat {input.trimmed} > {output.trimmed}"
+
 
 
 rule fastqc:
