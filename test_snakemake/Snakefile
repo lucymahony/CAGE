@@ -57,7 +57,7 @@ rule star_index:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  
         gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  
     output:
-        directory("../intermediate_data/snakemake_intermediate_data/{genome}_star_index")  
+        directory("../intermediate_data/snakemake_intermediate_data/star_index_{genome}")  
     threads: 16 
     log: "../intermediate_data/snakemake_intermediate_data/logs/star_index.{genome}.log"  
     shell:
@@ -126,7 +126,7 @@ rule bwa_index:
 
 
 rule hisat_index:
-    output: "../intermediate_data/snakemake_intermediate_data/{genome}_hisat.idx"
+    output: "../intermediate_data/snakemake_intermediate_data/hisat_index_{genome}"
     input:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  
         gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  
@@ -139,22 +139,22 @@ rule hisat_index:
     """
 
 
-# rule report_all_index:
-#     output: "../intermediate_data/snakemake_intermediate_data/all_indexes_report.txt"
-#     input:
-#         star: directory("../intermediate_data/snakemake_intermediate_data/fielder_star_index"),
-#         bowtie: "../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index.idx", # Note i am not sure this is the correct output 
-#         bwa: "../intermediate_data/snakemake_intermediate_data/bwa_index.idx", # Note i am not sure here how to make the output be this. 
-#         hisat: "../intermediate_data/snakemake_intermediate_data/hisat_fielder.idx"
-#     shell: r"""
-#             for file in {input.star} {input.bowtie} {input.bwa} {input.hisat}
-#             do 
-#                 if test -f "$file"
-#                 then 
-#                 echo "$file exists " >> {output}
-#                 fi
-#             done
-#             """
+rule report_all_index:
+    output: "../intermediate_data/snakemake_intermediate_data/all_indexes_report_{genome}.txt"
+    input:
+        star: directory("../intermediate_data/snakemake_intermediate_data/star_index_{genome}"),
+        bowtie: "../intermediate_data/snakemake_intermediate_data/bowtie_index_{genome}.1.bt2", 
+        bwa: "../intermediate_data/snakemake_intermediate_data/bwa_index_{genome}.amb"
+        hisat: "../intermediate_data/snakemake_intermediate_data/hisat_index_{genome}"
+    shell: r"""
+            for file in {input.star} {input.bowtie} {input.bwa} {input.hisat}
+            do 
+                if test -f "$file"
+                then 
+                echo "$file exists " >> {output}
+                fi
+            done
+            """
 
 # `# ALIGNING RULES 
 # rule star_align:
