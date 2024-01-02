@@ -90,14 +90,17 @@ rule bowtie_index:
         basename="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}"
 
     input: "../input_data/fielder_genome_data/{genome}.fasta"
-    output: 
-        output1="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.1.bt2" ,
-        output2="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.2.bt2",
-        output3="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.3.bt2" ,
-        output4="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.4.bt2",
-        outputrev1="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.rev1.bt2", 
-        outputrev2="../intermediate_data/snakemake_intermediate_data/fielder_bowtie_index_{genome}.rev2.bt2",
-
+    output:
+        multiext(
+            "genome",
+            ".1.bt2l",
+            ".2.bt2l",
+            ".3.bt2l",
+            ".4.bt2l",
+            ".rev.1.bt2l",
+            ".rev.2.bt2l",
+        ),
+        
     threads: 16
     log:  "../intermediate_data/snakemake_intermediate_data/logs/bowtie_index_{genome}.log"
     shell: r"""
