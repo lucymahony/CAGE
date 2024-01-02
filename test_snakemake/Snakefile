@@ -4,10 +4,10 @@ REPS = ["1", "2", "3"]
 #
 rule trim_reads:
     output:
-        read_1="{../intermediate_data/snakemake_intermediate_data}/trimmed_{tissue}{rep}.1.fastq.gz",
-        read_2="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}.2.fastq.gz",
-        read_1_unpaired="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}.1.unpaired.fastq.gz",
-        read_2_unpaired="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}.2.unpaired.fastq.gz"
+        read_1="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}_R1.fastq.gz",
+        read_2="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}_R2.fastq.gz",
+        read_1_unpaired="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}_R1.unpaired.fastq.gz",
+        read_2_unpaired="../intermediate_data/snakemake_intermediate_data/trimmed_{tissue}{rep}_R2.unpaired.fastq.gz"
     input: 
         read_1 = expand("../input_data/cage_data/Fastq_R1/{tissue}{rep}_R1.fastq.gz", tissue = TISSUE, rep = REPS),
         read_2 = expand("../input_data/cage_data/Fastq_R2/{tissue}{rep}_R2.fastq.gz", tissue = TISSUE, rep = REPS),
