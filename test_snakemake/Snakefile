@@ -144,7 +144,7 @@ rule report_all_index:
     input:
         star: directory("../intermediate_data/snakemake_intermediate_data/star_index_{genome}"),
         bowtie: "../intermediate_data/snakemake_intermediate_data/bowtie_index_{genome}.1.bt2", 
-        bwa: "../intermediate_data/snakemake_intermediate_data/bwa_index_{genome}.amb"
+        bwa: "../intermediate_data/snakemake_intermediate_data/bwa_index_{genome}.amb",
         hisat: "../intermediate_data/snakemake_intermediate_data/hisat_index_{genome}"
     shell: r"""
             for file in {input.star} {input.bowtie} {input.bwa} {input.hisat}
