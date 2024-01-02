@@ -131,7 +131,7 @@ rule hisat_index:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  
         gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  
     threads: 16
-    log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_index.log"
+    log: "../intermediate_data/snakemake_intermediate_data/logs/hisat_index_{genome}.log"
     shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
         hisat2_extract_splice_sites.py {input.gtf} > fielder.ss
         hisat2_extract_exons.py {input.gtf} > fielder.exon
