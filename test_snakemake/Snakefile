@@ -142,7 +142,7 @@ rule hisat_index:
 rule report_all_index:
     output: "../intermediate_data/snakemake_intermediate_data/all_indexes_report_{genome}.txt"
     input:
-        star = directory("../intermediate_data/snakemake_intermediate_data/star_index_{genome}"),
+        star = "../intermediate_data/snakemake_intermediate_data/star_index_{genome}/",
         bowtie =  "../intermediate_data/snakemake_intermediate_data/bowtie_index_{genome}.1.bt2", 
         bwa =  "../intermediate_data/snakemake_intermediate_data/bwa_index_{genome}.amb",
         hisat = "../intermediate_data/snakemake_intermediate_data/hisat_index_{genome}"
