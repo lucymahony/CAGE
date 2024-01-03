@@ -22,11 +22,18 @@ rule trim_reads:
         """
 
 
-rule count_reads:
+rule trim_count_reads:
     output: "{outdir}/{myfile}.count"
-    input:  "{indir}/{myfile}.fastq.gz"
+    input:  "{outdir}/{myfile}.fastq.gz"
     shell:
         "echo $(( $(wc -l <{input}) / 4 )) > {output}"
+
+rule untrim_count_reads:
+    output: "{outdir}/{sample}_R{num}.count"
+    input:  "../input_data/cage_data/Fastq_R{num}/{sample}_R{num}.fastq.gz"
+    shell:
+        "echo $(( $(wc -l <{input}) / 4 )) > {output}"
+
 
 
 rule all_counts:
@@ -34,13 +41,14 @@ rule all_counts:
         untrimmed = "{outdir}/untrimmed_counts_concatenated.txt",
         trimmed   = "{outdir}/trimmed_counts_concatenated.txt",
     input:
-        untrimmed = expand("../input_data/cage_data/Fastq_R{read}/{tissue}{rep}_R{read}.count", tissue = TISSUE, rep = REPS, read = ["1", "2"]),
-        trimmed = expand("../input_data/cage_data/Fastq_R{read}/{tissue}{rep}_R{read}_trimmed.count", tissue = TISSUE, rep = REPS, read = ["1", "2"]) # UNSURE OF THIS!
+        untrimmed = expand("{outdir}/{tissue}{rep}_R{read}.count", tissue = TISSUE, rep = REPS, read = ["1", "2"]),
+        trimmed = expand("{outdir}/trimmed_{tissue}{rep}_{type}.count", tissue = TISSUE, rep = REPS, type = ["1P", "2P", "1U", "2U"])
     
     shell:
         """
         cat {input.untrimmed} > {output.untrimmed} ; cat {input.trimmed} > {output.trimmed}
         """
+        
 
 
 
