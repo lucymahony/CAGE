@@ -41,15 +41,13 @@ rule all_counts:
         untrimmed = "{outdir}/untrimmed_counts_concatenated.txt",
         trimmed   = "{outdir}/trimmed_counts_concatenated.txt",
     input:
-        untrimmed = expand("{outdir}/{tissue}{rep}_R{read}.count", tissue = TISSUE, rep = REPS, read = ["1", "2"]),
-        trimmed = expand("{outdir}/trimmed_{tissue}{rep}_{type}.count", tissue = TISSUE, rep = REPS, type = ["1P", "2P", "1U", "2U"])
+        untrimmed = expand("{{outdir}}/{tissue}{rep}_R{read}.count", tissue = TISSUE, rep = REPS, read = ["1", "2"]),
+        trimmed = expand("{{outdir}}/trimmed_{tissue}{rep}_{type}.count", tissue = TISSUE, rep = REPS, type = ["1P", "2P", "1U", "2U"])
     
     shell:
         """
         cat {input.untrimmed} > {output.untrimmed} ; cat {input.trimmed} > {output.trimmed}
         """
-        
-
 
 
 
