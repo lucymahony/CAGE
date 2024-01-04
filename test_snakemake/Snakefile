@@ -17,10 +17,10 @@ rule trim_reads:
     shell: 
         r"""
         source package 50fcf79b-73a3-4f94-9553-5ed917823423;
-        trimmomatic PE -threads {threads} {input.read_1} {input.read_2} -baseout {wildcards.outdir}/trimmed_{wildcards.sample} \
+        trimmomatic PE -threads {threads} {input.read_1} {input.read_2} \
+        {output.read_1} {output.read_1_unpaired} {output.read_2} {output.read_2_unpaired} \
         ILLUMINACLIP:{input.solexa}:2:30:12 SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
         """
-
 
 rule trim_count_reads:
     output: "{outdir}/{myfile}.trim.count"
