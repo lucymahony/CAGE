@@ -26,13 +26,13 @@ rule trim_count_reads:
     output: "{outdir}/{myfile}.trim.count"
     input:  "{outdir}/{myfile}.fastq.gz"
     shell:
-        "echo $(( $(wc -l <{input}) / 4 )) > {output}"
+        "echo {wildcards.myfile}: $(( $(wc -l <{input}) / 4 )) > {output}"
 
 rule untrim_count_reads:
     output: "{outdir}/{sample}_R{num}.untrim.count"
     input:  "../input_data/cage_data/Fastq_R{num}/{sample}_R{num}.fastq.gz"
     shell:
-        "echo $(( $(wc -l <{input}) / 4 )) > {output}"
+        "echo {wildcards.sample} $(( $(wc -l <{input}) / 4 )) > {output}"
 
 
 
