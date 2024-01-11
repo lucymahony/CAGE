@@ -92,22 +92,12 @@ rule star_index:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  
         gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  
     output:
-        directory("{outdir}/star_index_{genome}")  
+        text = "{outdir}/star_index_{genome}/genomeParameters.txt"
     threads: 16 
     log: "{outdir}/logs/star_index.{genome}.log"  
     shell:
         """
-        #     # Check if the directory exists
-        # if [ -d {output} ]; then
-        #     echo "Directory {output} exists."
-        # else
-        #     # Create the directory
-        #     echo "Creating directory {output}"
-        #     mkdir "{output}"
-        # fi
-        #set +u;
         source package /tgac/software/testing/bin/STAR-2.3.0
-        #;set -u
         
         STAR \
             --runThreadN {threads} \
@@ -116,7 +106,7 @@ rule star_index:
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100 \
             --limitGenomeGenerateRAM 100111047092 \
-            --genomeDir {output} 
+            --genomeDir {wildcard.outdir}/star_index_{wildcard.genome}/
         """
 
 
