@@ -91,14 +91,17 @@ rule star_index:
     input:
         fasta = "../input_data/fielder_genome_data/{genome}.fasta",  
         gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  
-    output:
-        text = "{outdir}/star_index_{genome}/genomeParameters.txt"
+    output: directory("{outdir}/star_index_{genome}")
     threads: 16 
     log: "{outdir}/logs/star_index.{genome}.log"  
     shell:
         """
+        
+        mkdir {output}
+
         source package /tgac/software/testing/bin/STAR-2.3.0
         
+
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
@@ -106,7 +109,9 @@ rule star_index:
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100 \
             --limitGenomeGenerateRAM 100111047092 \
-            --genomeDir ../intermediate_data/snakemake_intermediate_data/star_index_201216_Fielder_pseudomolecules_V1+unanchored_contigs/
+            --genomeDir {output}
+
+        
         """
 
 
