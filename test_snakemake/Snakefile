@@ -106,7 +106,7 @@ rule star_index:
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100 \
             --limitGenomeGenerateRAM 100111047092 \
-            --genomeDir {output.text|dirname}//
+            --genomeDir ../intermediate_data/snakemake_intermediate_data/star_index_201216_Fielder_pseudomolecules_V1+unanchored_contigs/
         """
 
 
