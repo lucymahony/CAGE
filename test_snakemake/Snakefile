@@ -97,14 +97,14 @@ rule star_index:
     log: "{outdir}/logs/star_index.{genome}.log"  
     shell:
         """
-            # Check if the directory exists
-        if [ -d {output} ]; then
-            echo "Directory {output} exists."
-        else
-            # Create the directory
-            echo "Creating directory {output}"
-            mkdir "{output}"
-        fi
+        #     # Check if the directory exists
+        # if [ -d {output} ]; then
+        #     echo "Directory {output} exists."
+        # else
+        #     # Create the directory
+        #     echo "Creating directory {output}"
+        #     mkdir "{output}"
+        # fi
         #set +u;
         source package /tgac/software/testing/bin/STAR-2.3.0
         #;set -u
