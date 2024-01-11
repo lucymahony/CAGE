@@ -97,7 +97,7 @@ rule star_index:
     shell:
         """
         source package /tgac/software/testing/bin/STAR-2.3.0;
-        mkdir {output} &&
+        #mkdir {output} &&
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
