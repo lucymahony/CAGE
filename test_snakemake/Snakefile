@@ -96,12 +96,8 @@ rule star_index:
     log: "{outdir}/logs/star_index.{genome}.log"  
     shell:
         """
-        
-        mkdir {output}
-
-        source package /tgac/software/testing/bin/STAR-2.3.0
-        
-
+        source package /tgac/software/testing/bin/STAR-2.3.0;
+        mkdir {output} &&
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
