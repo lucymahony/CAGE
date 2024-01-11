@@ -104,17 +104,17 @@ rule star_index:
             # Create the directory
             echo "Creating directory {output}"
             mkdir "{output}"
-        fi
-        set +u; source package /tgac/software/testing/bin/STAR-2.3.0; set -u
+        # fi
+        # set +u; source package /tgac/software/testing/bin/STAR-2.3.0; set -u
         
-        STAR \
-            --runThreadN {threads} \
-            --runMode genomeGenerate \
-            --genomeFastaFiles {input.fasta} \
-            --sjdbGTFfile {input.gtf} \
-            --sjdbOverhang 100 \
-            --limitGenomeGenerateRAM 100111047092 \
-            --genomeDir {output} 
+        # STAR \
+        #     --runThreadN {threads} \
+        #     --runMode genomeGenerate \
+        #     --genomeFastaFiles {input.fasta} \
+        #     --sjdbGTFfile {input.gtf} \
+        #     --sjdbOverhang 100 \
+        #     --limitGenomeGenerateRAM 100111047092 \
+        #     --genomeDir {output} 
         """
 
 
