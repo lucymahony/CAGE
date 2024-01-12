@@ -105,9 +105,7 @@ rule star_index:
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100 \
             --limitGenomeGenerateRAM 100111047092 \
-            --genomeDir {output}
-
-        
+            --genomeDir {output}        
         """
 
 
@@ -120,12 +118,12 @@ rule bowtie_index:
     output: 
         multiext(
             "{outdir}/bowtie_index_{genome}.",
-            "1.bt2",
-            "2.bt2",
-            "3.bt2",
-            "4.bt2",
-            "rev.1.bt2",
-            "rev.2.bt2",
+            "1.bt2l",
+            "2.bt2l",
+            "3.bt2l",
+            "4.bt2l",
+            "rev.1.bt2l",
+            "rev.2.bt2l",
          )
 
     threads: 16
@@ -168,22 +166,7 @@ rule hisat_index:
     """
 
 
-rule report_all_index:
-    output: "{outdir}/all_indexes_report_{genome}.txt"
-    input:
-        star = "{outdir}/star_index_{genome}/",
-        bowtie =  "{outdir}/bowtie_index_{genome}.1.bt2", 
-        bwa =  "{outdir}/bwa_index_{genome}.amb",
-        hisat = "{outdir}/hisat_index_{genome}"
-    shell: r"""
-            for file in {input.star} {input.bowtie} {input.bwa} {input.hisat}
-            do 
-                if test -f "$file"
-                then 
-                echo "$file exists " >> {output}
-                fi
-            done
-            """
+
 
 # `# ALIGNING RULES 
 # rule star_align:
