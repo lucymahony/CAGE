@@ -148,7 +148,7 @@ rule bwa_index:
     log:  "{outdir}/logs/bwa_index_{genome}.log"
     shell:r"""
     source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
-    bwa index {input} -p {wildcard.outdir}/bwa_index_{wildcard.genome}
+    bwa index {input} -p {output}
     """
 
 
