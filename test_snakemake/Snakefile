@@ -97,7 +97,7 @@ rule star_index:
     shell:
         """
         source package /tgac/software/testing/bin/STAR-2.3.0;
-        mkdir {output} ;
+        mkdir -p {output} ;
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
@@ -168,20 +168,31 @@ rule hisat_index:
 
 
 
-# `# ALIGNING RULES 
-# rule star_align:
-#     output: directory("{outdir}/fielder_star_mapped_reads.{myfile}")
-#     input:
-#         star_index_directory: directory("{outdir}/fielder_star_index"),
-#         read_1: "{outdir}/{myfile}.fq.gz", # Not sure if these should be named like this or something trim 
-#         read_2: "{outdir}/{myfile}.fq.gz"
-#     threads: 16
-#     log: "{outdir}/logs/star_align.log"
-#     shell: r"""
-#     source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
-#     STAR --runThreadN {threads} --genomeDir {input.star_index_directory} --readFilesIn {input.read_1} {input.read_2}
-#      --readFilesCommand zcat --outFileNamePrefix {output} --outSAMtype BAM SortedByCoordinate --limitGenomeGenerateRAM 1001110470922 --limitBAMsortRAM 3000000000
-#     """
+`# ALIGNING RULES 
+rule star_align:
+    output:
+        aln="{outdir}/{sample}/pe_aligned.sam",
+        log="{outdir}/{sample}/Log.out",
+        sj="{outdir}/{sample}/SJ.out.tab",
+        unmapped=["star/pe/{sample}/unmapped.1.fastq.gz","star/pe/{sample}/unmapped.2.fastq.gz"]
+    input:
+        star_index_directory: "{outdir}/star_index_{genome}",
+        read_1: "{outdir}/trimmed_{sample}_1P.fastq.gz", 
+        read_2: "{outdir}/trimmed_{sample}_2P.fastq.gz"
+    threads: 16
+    log: "{outdir}/logs/star_align.log"
+    shell: r"""
+    source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
+    STAR 
+    --runThreadN {threads} \
+    --genomeDir {input.star_index_directory} \
+    --readFilesIn {input.read_1} {input.read_2} \
+    --readFilesCommand zcat \
+    --outFileNamePrefix {output} \
+    --outSAMtype BAM SortedByCoordinate \
+    --limitGenomeGenerateRAM 1001110470922 \
+    --limitBAMsortRAM 3000000000
+    """
 
 
 # rule bowtie_align:
