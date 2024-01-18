@@ -171,7 +171,7 @@ rule hisat_index:
 `# ALIGNING RULES 
 rule star_align:
     output:
-        aln="{outdir}/star_{sample}_aligned.bam
+        aln="{outdir}/star_{sample}_aligned.bam"
     input:
         star_index_directory: "{outdir}/star_index_201216_Fielder_pseudomolecules_V1+unanchored_contigs",
         read_1: "{outdir}/trimmed_{sample}_1P.fastq.gz", 
