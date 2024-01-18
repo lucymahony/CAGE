@@ -159,7 +159,8 @@ rule hisat_index:
         gtf = "../input_data/fielder_genome_data/fielder.release.gtf"  
     threads: 16
     log: "{outdir}/logs/hisat_index_{genome}.log"
-    shell:r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
+    shell:
+    r""" source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13
         hisat2_extract_splice_sites.py {input.gtf} > {wildcards.outdir}/fielder.ss
         hisat2_extract_exons.py {input.gtf} > {wildcards.outdir}/fielder.exon
         hisat2-build -p {threads} --ss {wildcards.outdir}/fielder.ss --exon {wildcards.outdir}/fielder.exon {input.fasta} {output}
