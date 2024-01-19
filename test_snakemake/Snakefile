@@ -167,7 +167,7 @@ rule hisat_index:
         """
 
 
-`# ALIGNING RULES 
+# ALIGNING RULES 
 rule star_align:
     output: "{outdir}/star_{sample}_aligned.bam"
     input:
