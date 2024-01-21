@@ -171,9 +171,9 @@ rule hisat_index:
 rule star_align:
     output: "{outdir}/star_{sample}_aligned.bam"
     input:
-        star_index_directory: "{outdir}/star_index_201216_Fielder_pseudomolecules_V1+unanchored_contigs",
-        read_1: "{outdir}/trimmed_{sample}_1P.fastq.gz", 
-        read_2: "{outdir}/trimmed_{sample}_2P.fastq.gz"
+        star_index_directory = "{outdir}/star_index_201216_Fielder_pseudomolecules_V1+unanchored_contigs",
+        read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
+        read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz",
     threads: 16
     log: "{outdir}/logs/star_align.log"
     shell: r"""
@@ -193,9 +193,9 @@ rule star_align:
 rule bowtie_align:
     output: "{outdir}/bowtie_${myfile}.bam"
     input:
-        bowtie_index: "{outdir}/bowtie_index_{genome}.idx",
-        read_1: "{outdir}/trimmed_{sample}_1P.fastq.gz", 
-        read_2: "{outdir}/trimmed_{sample}_2P.fastq.gz"
+        bowtie_index = "{outdir}/bowtie_index_{genome}.idx",
+        read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
+        read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
     log: "{outdir}/logs/bowtie_align.log"
     shell: r""" 
@@ -209,9 +209,9 @@ rule bowtie_align:
 rule bowtie_align_sensitive:
 output: "{outdir}/bowtie_sensitive_${myfile}.bam"
     input:
-        bowtie_index: "{outdir}/bowtie_index_{genome}.idx",
-        read_1: "{outdir}/trimmed_{sample}_1P.fastq.gz", 
-        read_2: "{outdir}/trimmed_{sample}_2P.fastq.gz"
+        bowtie_index = "{outdir}/bowtie_index_{genome}.idx",
+        read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
+        read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
     log: "{outdir}/logs/bowtie_align_sensitive.log"
     shell: r""" 
@@ -223,9 +223,9 @@ output: "{outdir}/bowtie_sensitive_${myfile}.bam"
 rule bwa_align:
     output: "{outdir}/bwa_${myfile}.bam"
     input:
-        bwa_index: "{outdir}/bwa_index_{genome}.idx" 
-        read_1: "{outdir}/trimmed_{sample}_1P.fastq.gz", 
-        read_2: "{outdir}/trimmed_{sample}_2P.fastq.gz"
+        bwa_index = "{outdir}/bwa_index_{genome}.idx" 
+        read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
+        read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
     log: "{outdir}/logs/bowtie_align_sensitive.log"
     shell: r""" 
@@ -238,8 +238,8 @@ rule hisat_align:
     output: "{outdir}/{sample}.hisat.bam"
     input: 
         index = "{outdir}/hisat_index_{genome}.idx" 
-        read_1: "{outdir}/trimmed_{sample}_1P.fastq.gz", 
-        read_2: "{outdir}/trimmed_{sample}_2P.fastq.gz"
+        read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
+        read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
     log: "{outdir}/logs/hisat_align.log"
     shell: r"""
