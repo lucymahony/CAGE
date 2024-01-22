@@ -223,7 +223,7 @@ rule bowtie_align_sensitive:
 rule bwa_align:
     output: "{outdir}/bwa_${myfile}.bam"
     input:
-        bwa_index = "{outdir}/bwa_index_{genome}.idx" 
+        bwa_index = "{outdir}/bwa_index_{genome}.idx",
         read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
         read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
@@ -237,7 +237,7 @@ rule bwa_align:
 rule hisat_align:
     output: "{outdir}/{sample}.hisat.bam"
     input: 
-        index = "{outdir}/hisat_index_{genome}.idx" 
+        index = "{outdir}/hisat_index_{genome}.idx",
         read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
         read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
