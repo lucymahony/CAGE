@@ -191,13 +191,13 @@ rule star_align:
 
 
 rule bowtie_align:
-    output: "{outdir}/bowtie_${myfile}.bam"
+    output: "{outdir}/bowtie_{sample}_aligned.bam"
     input:
         bowtie_index = "{outdir}/bowtie_index_{genome}.idx",
         read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
         read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
-    log: "{outdir}/logs/bowtie_align.log"
+    log: "{outdir}/logs/bowtie_align_{sample}.log"
     shell: r""" 
         source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
         source package 29a74b59-88fc-4453-a30b-1310b34910b9 # source bowtie2 2.4.1
@@ -207,13 +207,13 @@ rule bowtie_align:
     
 
 rule bowtie_align_sensitive:
-    output: "{outdir}/bowtie_sensitive_${myfile}.bam"
+    output: "{outdir}/bowtie_sensitive_{sample}_aligned.bam"
     input:
         bowtie_index = "{outdir}/bowtie_index_{genome}.idx",
         read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
         read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
-    log: "{outdir}/logs/bowtie_align_sensitive.log"
+    log: "{outdir}/logs/bowtie_align_sensitive_{sample}.log"
     shell: r""" 
         source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
         source package 29a74b59-88fc-4453-a30b-1310b34910b9 # source bowtie2 2.4.1
@@ -221,13 +221,13 @@ rule bowtie_align_sensitive:
         """
 
 rule bwa_align:
-    output: "{outdir}/bwa_${myfile}.bam"
+    output: "{outdir}/bwa_{sample}_aligned.bam"
     input:
         bwa_index = "{outdir}/bwa_index_{genome}.idx",
         read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
         read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
-    log: "{outdir}/logs/bowtie_align_sensitive.log"
+    log: "{outdir}/logs/bwa_align_{sample}.log"
     shell: r""" 
     source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
     source package fa33234e-dceb-4a58-9a78-7bcf9809edd7 # source package bwa version 0.7.27-r1188
@@ -235,13 +235,13 @@ rule bwa_align:
     """
 
 rule hisat_align:
-    output: "{outdir}/{sample}.hisat.bam"
+    output: "{outdir}/hisat_{sample}_aligned.bam"
     input: 
         index = "{outdir}/hisat_index_{genome}.idx",
         read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
         read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz"
     threads: 16
-    log: "{outdir}/logs/hisat_align.log"
+    log: "{outdir}/logs/hisat_align_{sample}.log"
     shell: r"""
     source package f9c1e0c5-d0e8-4ba0-9edd-88235400fa13 # source hisat2 
     source package 638df626-d658-40aa-80e5-14a275b7464b # source samtools 
