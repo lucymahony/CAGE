@@ -175,7 +175,7 @@ rule star_align:
         read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
         read_2 = "{outdir}/trimmed_{sample}_2P.fastq.gz",
     threads: 16
-    log: "{outdir}/logs/star_align.log"
+    log: "{outdir}/logs/star_align_{sample}.log"
     shell: r"""
     source package /tgac/software/testing/bin/STAR-2.3.0 # using version 2.3.0 as later versions seem to have bugs
     STAR 
