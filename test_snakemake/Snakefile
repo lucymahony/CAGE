@@ -207,7 +207,7 @@ rule bowtie_align:
     
 
 rule bowtie_align_sensitive:
-output: "{outdir}/bowtie_sensitive_${myfile}.bam"
+    output: "{outdir}/bowtie_sensitive_${myfile}.bam"
     input:
         bowtie_index = "{outdir}/bowtie_index_{genome}.idx",
         read_1 = "{outdir}/trimmed_{sample}_1P.fastq.gz", 
