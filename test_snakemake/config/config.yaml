@@ -1,0 +1,2 @@
+samples: config/samples.tsv #sample_name tissue  read_number
+units: config/units.tsv #the files extensions?
