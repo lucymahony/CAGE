@@ -213,21 +213,16 @@ rule hisat2_align:
 
 rule bamtools_statistics:
     input: "{outdir}/{sample}.{variety}.{tool}.bam"
-    output: "{outdir}/{sample}.{variety}.{tool}.statistics.tsv"
-    shell: r"""
-    bamtools stats -in {input} -O tsv > {output}
-    """
+    output: "{outdir}/{sample}.{variety}.{tool}.statistics.txt"
+    shell: r"bamtools stats -in {input} > {output}"
 
-#rule report_stats_csv:
-#    input: "{outdir}/{sample}.{variety}.{tool}.statistics.txt"
-#    output: "{outdir}/{sample}.{variety}.{tool}.statistics.csv"
-#    shell:r"""
-#    {input} \
-#        | awk -F ':\t' '{{print $1","$2}}' \
-#        | sed 's/^[ \t]*//' \
-#        | sed 's/ [ \t]*/,/g' \
-#        > {output}
-#    """
+rule report_stats_csv:
+    input: "{outdir}/{sample}.{variety}.{tool}.statistics.txt"
+    output: "{outdir}/{sample}.{variety}.{tool}.statistics.csv"
+    script:
+        "../scripts/alignment_stats.py"
+
+
 
 #rule df_of_alignment_statistics:
 #    input: expand("{{outdir}}/{sample}{repeats}.{variety}.{tool}.statistics.txt", sample=["LE", "SP", "RO", "IS"],
@@ -236,3 +231,4 @@ rule bamtools_statistics:
 #    shell:r"""
 #    # For each LE1.test.star.statistics.txt file pull out the 
 #    """
+
