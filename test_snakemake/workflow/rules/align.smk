@@ -108,7 +108,7 @@ rule hisat2_genome_index:
         r""" 
         hisat2_extract_splice_sites.py {input.gtf} > {wildcards.outdir}/fielder.ss
         hisat2_extract_exons.py {input.gtf} > {wildcards.outdir}/fielder.exon
-        hisat2-build --ss {wildcards.outdir}/fielder.ss --exon {wildcards.outdir}/fielder.exon {input.fasta} {output}
+        hisat2-build --ss {wildcards.outdir}/fielder.ss --exon {wildcards.outdir}/fielder.exon {input.fasta} {wildcards.outdir}/{wildcards.variety}.hisat2.index
         """
 
 
@@ -116,8 +116,6 @@ rule hisat2_genome_index:
 
 rule star_align:
     # snakemake ../../../../../tmp/LE1.test.star.Aligned.sortedByCoord.out.bam -s align.smk --use-conda --conda-frontend conda --cores 16
-    # For somereason qig at the start of this line seems to make the conda env not work correctly ??
-    # At some point I could come and clean up the output file name to remove the .Aligned.sortedByCoord.out proportion
     input:
         star_index_directory = "{outdir}/{variety}.star.index",
         read_1 = "{outdir}/{sample}_1P.trim.fastq.gz", 
@@ -143,6 +141,7 @@ rule star_align:
 
 
 rule star_rename:
+    # This rule cleans up the output of star containing .Aligned.sortedByCoord.out in the output 
     input: "{outdir}/{sample}.{variety}.star.Aligned.sortedByCoord.out.bam"
     output: "{outdir}/{sample}.{variety}.star.bam"
     shell: "mv {input} {output}"
@@ -216,19 +215,25 @@ rule bamtools_statistics:
     output: "{outdir}/{sample}.{variety}.{tool}.statistics.txt"
     shell: r"bamtools stats -in {input} > {output}"
 
+
 rule report_stats_csv:
-    input: "{outdir}/{sample}.{variety}.{tool}.statistics.txt"
-    output: "{outdir}/{sample}.{variety}.{tool}.statistics.csv"
+    input: 
+        statistics="{outdir}/{sample}.{variety}.{tool}.statistics.txt"
+    output: 
+        csv="{outdir}/{sample}.{variety}.{tool}.statistics.csv"
     script:
         "../scripts/alignment_stats.py"
 
 
+rule df_of_alignment_statistics:
+    # snakemake -j1 ../../../../../tmp/summary_alignment_stats_for_test.csv -s align.smk --use-conda --conda-frontend conda
+    input: 
+        expand("{{outdir}}/{samples}{repeats}.{{variety}}.{tools}.statistics.csv", samples=["LE", "SP", "RO", "IS"], repeats=["1", "2", "3"], tools=["star", "bowtie2", "bwa", "hisat2"])
+        #expand("{{outdir}}/{samples}{repeats}.{{variety}}.{tools}.statistics.csv", samples=["LE"], repeats=["1"], tools=["star", "bowtie2", "bwa", "hisat2"])
+    output:
+        csv="{outdir}/summary_alignment_stats_for_{variety}.csv"
+    script:
+        "../scripts/all_alignment_stats.py"
 
-#rule df_of_alignment_statistics:
-#    input: expand("{{outdir}}/{sample}{repeats}.{variety}.{tool}.statistics.txt", sample=["LE", "SP", "RO", "IS"],
-#     repeats=["1", "2", "3"], variety=["test", "fielder", "CS"], tool=["star", "bowtie2", "bwa", "hisat2"])
-#    output: "{outdir}/alignment.csv"
-#    shell:r"""
-#    # For each LE1.test.star.statistics.txt file pull out the 
-#    """
 
+    

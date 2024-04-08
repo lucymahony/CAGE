@@ -7,9 +7,9 @@ rule trim_reads:
         read_1_unpaired="{outdir}/{sample}_1U.trim.fastq.gz",
         read_2_unpaired="{outdir}/{sample}_2U.trim.fastq.gz"
     input: 
-        read_1 = "../../../test_CAGE_data/{sample}_R1_test.fastq",
-        read_2 = "../../../test_CAGE_data/{sample}_R2_test.fastq",
-        solexa = "../../../test_CAGE_data/solexa_sequencing_primers.fa",
+        read_1 = "../../../../../tmp/test_CAGE_data/{sample}_R1_test.fastq",
+        read_2 = "../../../../../tmp/test_CAGE_data/{sample}_R2_test.fastq",
+        solexa = "../../../../../tmp/test_CAGE_data/solexa_sequencing_primers.fa",
     conda: "../envs/trim.yaml"
     shell: 
         r"""
