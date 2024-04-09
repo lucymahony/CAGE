@@ -228,12 +228,23 @@ rule report_stats_csv:
 rule df_of_alignment_statistics:
     # snakemake -j1 ../../../../../tmp/summary_alignment_stats_for_test.csv -s align.smk --use-conda --conda-frontend conda
     input: 
-        expand("{{outdir}}/{samples}{repeats}.{{variety}}.{tools}.statistics.csv", samples=["LE", "SP", "RO", "IS"], repeats=["1", "2", "3"], tools=["star", "bowtie2", "bwa", "hisat2"])
-        #expand("{{outdir}}/{samples}{repeats}.{{variety}}.{tools}.statistics.csv", samples=["LE"], repeats=["1"], tools=["star", "bowtie2", "bwa", "hisat2"])
+        #expand("{{outdir}}/{samples}{repeats}.{{variety}}.{tools}.statistics.csv", samples=["LE", "SP", "RO", "IS"], repeats=["1", "2", "3"], tools=["star", "bowtie2", "bwa", "hisat2"])
+        expand("{{outdir}}/{samples}{repeats}.{{variety}}.{tools}.statistics.csv", samples=["LE"], repeats=["1"], tools=["star", "bowtie2"])
     output:
         csv="{outdir}/summary_alignment_stats_for_{variety}.csv"
     script:
         "../scripts/all_alignment_stats.py"
 
 
+rule generate_alignment_plots:
+    input:
+        "{outdir}/summary_alignment_stats_for_{variety}.csv"
+    output:
+        "{outdir}/alignment_plot_{variety}.pdf"
+    conda:
+        "../envs/rscript.yaml"
+    script:
+        "../scripts/plot_alignment_results.R"
+    
+    
     
