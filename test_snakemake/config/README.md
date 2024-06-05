@@ -1,0 +1,19 @@
+# Configurable options in config.yaml explained here. 
+
+
+
+
+
+
+
+
+
+# Tissue abbreviations 
+LE : Leaf
+SP : Spike
+IS : Immature Spike
+RO : Root 
+SE : Seedling
+SP1 : Spikelet
+EM: Embryo
+
