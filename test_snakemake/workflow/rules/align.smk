@@ -238,13 +238,14 @@ rule df_of_alignment_statistics:
 
 rule generate_alignment_plots:
     input:
-        "{outdir}/summary_alignment_stats_for_{variety}.csv"
+        csv="{outdir}/summary_alignment_stats_for_{variety}.csv"
     output:
         "{outdir}/alignment_plot_{variety}.pdf"
     conda:
         "../envs/rscript.yaml"
     script:
         "../scripts/plot_alignment_results.R"
+    
     
     
     

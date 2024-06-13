@@ -1,14 +1,11 @@
-log <- file(snakemake@log[[1]], open = "wt")
-sink(log)
-sink(log, type = "message")
-
 library(ggplot2)
 library(reshape2)
 library(dplyr)
 
-
-data <-read.csv(snakemake@input, sept = '\t', header = TRUE)
-colnames(data)
+file_path <- snakemake@input[['csv']]
+print(file_path)
+#data <-read.csv(file_path, sep = '\t', header = TRUE)
+#colnames(data)
 
 
 
