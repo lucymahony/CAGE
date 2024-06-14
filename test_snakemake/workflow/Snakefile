@@ -1,0 +1,8 @@
+from snakemake.utils import min_version
+
+min_version("7.20")
+
+configfile: f"/config/config.yaml"
+
+include: "rules/common.smk"
+include: "rules/trim.smk"
