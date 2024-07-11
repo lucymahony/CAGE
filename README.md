@@ -1,5 +1,37 @@
 # CAGE
-Scripts in CAGEseq data analysis pipeline.
+Scripts in CAGE-seq data analysis pipeline.
+
+Files stored in the following structure:
+
+├── input_data/
+│ ├── *_cage_data/
+│ ├── *_genome_data/
+│
+├── intermediate_data/
+│
+├── results/
+│
+├── snakemake/
+│ ├── config/
+│ ││ ├──config.yaml 
+│ ││ ├──samples.tsv
+│ ││ ├──units.tsv
+│ ├── workflow/
+│ │├envs/
+│ │├rules/
+│ │├scripts/
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## STAR

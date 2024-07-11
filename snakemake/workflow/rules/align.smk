@@ -6,40 +6,45 @@
 
 
 # At some point move these helper functions to the config file?
-def get_fasta(variety):
-    variety_assembly_dict = {'CS': '../../../../../tmp/test_datasets/iwgsc_refseqv2.1_assembly.fa', 
-                    'fielder': '../../../../../tmp/test_datasets/fielder.fa', 
-                    'test': '../../../../../tmp/test_datasets/test.fa'}
-    return variety_assembly_dict[variety]
+def get_fasta(genome_aligned_to):
+    variety_assembly_dict = {'CS':'/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/chinese_spring_genome_data/GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic_modified.fna', # Note modified to have the same chromosome names as the annotation
+                    'fielder': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta', 
+                    'cadenza': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_genome_data/'} # Note currently no cadenza genome files
+    return variety_assembly_dict[genome_aligned_to]
 
-def get_gtf(variety):
-    variety_annotation_dict = {'CS': '../../../../../tmp/test_datasets/iwgsc_refseqv2.1_annotation_200916_HC.gff3', 
-                    'fielder': '../../../../../tmp/test_datasets/fielder.gtf',
-                    'test': '../../../../../tmp/test_datasets/test.gff3'}
-    return variety_annotation_dict[variety]
+def get_gtf(genome_aligned_to):
+    variety_annotation_dict = {'CS': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/chinese_spring_genome_data/iwgsc_refseqv2.1_annotation_200916_HC.gff3', 
+                    'fielder': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_genome_data/fielder.release.gtf',
+                    'cadenza': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_genome_data/'} # Note currently no cadenza genome files
+    return variety_annotation_dict[genome_aligned_to]
 
 
 ########## Genome Indexing ##########
 
 rule star_genome_index:
-    # qig snakemake -F ../../../../../tmp/CS.star.index -s align.smk --use-conda --conda-frontend conda --cores 16
+    # Generates a star index of given genome. 
+    # NOTE that the names of the chromosomes on the assembly and the annotation have to be the same 
+    # So for CS the assembly is modified using sed e.g. sed -e 's/>NC_057794.1 />Chr1A /' GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic_modified.fna
+    # sed -e 's/>NC_057794.1 />Chr1A /
+    
     input:
-        fasta = lambda wildcards : get_fasta(wildcards.variety),  
-        gtf = lambda wildcards : get_gtf(wildcards.variety),
-    output: directory("{outdir}/{variety}.star.index")
+        fasta = lambda wildcards : get_fasta(wildcards.genome_aligned_to),  
+        gtf = lambda wildcards : get_gtf(wildcards.genome_aligned_to),
+    output: directory("{outdir}/{genome_aligned_to}.star.index")
+    threads: 16
     shell:
         """
         # Create temporary directory
         tempdir=$(mktemp -d)
         trap "rm -rf $tempdir" EXIT
-        
+
         STAR \
             --runThreadN {threads} \
             --runMode genomeGenerate \
             --genomeFastaFiles {input.fasta} \
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100 \
-            --limitGenomeGenerateRAM 100111047092 \
+            --limitGenomeGenerateRAM 172020153610 \
             --genomeDir $tempdir \
         
         # Move outputs to proper location
@@ -48,10 +53,10 @@ rule star_genome_index:
 
 
 rule bowtie2_genome_index:
-    input: lambda wildcards : get_fasta(wildcards.variety)
+    input: lambda wildcards : get_fasta(wildcards.genome_aligned_to)
     output: 
         multiext(
-            "{outdir}/{variety}.bowtie2.index.",
+            "{outdir}/{genome_aligned_to}.bowtie2.index.",
             "1.bt2",
             "2.bt2",
             "3.bt2",
@@ -61,15 +66,15 @@ rule bowtie2_genome_index:
          )
     shell: 
         r"""
-        bowtie2-build {input} {wildcards.outdir}/{wildcards.variety}.bowtie2.index
+        bowtie2-build {input} {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index
         """
 
 
 rule bowtie2_genome_index_large:
-    input: lambda wildcards : get_fasta(wildcards.variety)
+    input: lambda wildcards : get_fasta(wildcards.genome_aligned_to)
     output: 
         multiext(
-            "{outdir}/{variety}.bowtie2.index.",
+            "{outdir}/{genome_aligned_to}.bowtie2.index.",
             "1.bt2l",
             "2.bt2l",
             "3.bt2l",
@@ -79,15 +84,15 @@ rule bowtie2_genome_index_large:
          )
     shell: 
         r"""
-        bowtie2-build {input} {wildcards.outdir}/{wildcards.variety}.bowtie2.index
+        bowtie2-build {input} {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index
         """
 
 
 rule bwa_genome_index:
-    input: lambda wildcards : get_fasta(wildcards.variety)
+    input: lambda wildcards : get_fasta(wildcards.genome_aligned_to)
     output: 
         multiext(
-            "{outdir}/{variety}.bwa.index.",
+            "{outdir}/{genome_aligned_to}.bwa.index.",
             "amb",
             "ann",
             "bwt",
@@ -95,79 +100,120 @@ rule bwa_genome_index:
             "sa"), 
     shell:
         r"""
-        bwa index {input} -p {wildcards.outdir}/{wildcards.variety}.bwa.index
+        bwa index {input} -p {wildcards.outdir}/{wildcards.genome_aligned_to}.bwa.index
         """
 
 
 rule hisat2_genome_index:
     input:
-        fasta = lambda wildcards : get_fasta(wildcards.variety),  
-        gtf = lambda wildcards : get_gtf(wildcards.variety),
-    output: expand("{{outdir}}/{{variety}}.hisat2.index.{num}.ht2", num=[1, 2, 4, 5, 6, 7, 8])
+        fasta = lambda wildcards : get_fasta(wildcards.genome_aligned_to),  
+        gtf = lambda wildcards : get_gtf(wildcards.genome_aligned_to),
+    output: expand("{{outdir}}/{{genome_aligned_to}}.hisat2.index.{num}.ht2", num=[1, 2, 4, 5, 6, 7, 8])
     shell:
         r""" 
         hisat2_extract_splice_sites.py {input.gtf} > {wildcards.outdir}/fielder.ss
         hisat2_extract_exons.py {input.gtf} > {wildcards.outdir}/fielder.exon
-        hisat2-build --ss {wildcards.outdir}/fielder.ss --exon {wildcards.outdir}/fielder.exon {input.fasta} {wildcards.outdir}/{wildcards.variety}.hisat2.index
+        hisat2-build --ss {wildcards.outdir}/fielder.ss --exon {wildcards.outdir}/fielder.exon {input.fasta} {wildcards.outdir}/{wildcards.genome_aligned_to}.hisat2.index
         """
 
 
 ########## Aligning Paired Trimmed Reads  ##########
 
-rule star_align:
-    # snakemake ../../../../../tmp/LE1.test.star.Aligned.sortedByCoord.out.bam -s align.smk --use-conda --conda-frontend conda --cores 16
+rule star_align_pe:
+    # Aligning paired end reads with STAR
     input:
-        star_index_directory = "{outdir}/{variety}.star.index",
-        read_1 = "{outdir}/{sample}_1P.trim.fastq.gz", 
-        read_2 = "{outdir}/{sample}_2P.trim.fastq.gz",
+        star_index_directory = "{outdir}/{genome_aligned_to}.star.index",
+        read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
+        read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
     output: 
-        bam = "{outdir}/{sample}.{variety}.star.Aligned.sortedByCoord.out.bam",
+        bam = "{outdir}/{sample}.{genome_aligned_to}.pe.star.Aligned.sortedByCoord.out.bam",
     shell: r"""
     STAR \
     --readFilesIn {input.read_1} {input.read_2} \
     --readFilesCommand zcat \
-    --outFileNamePrefix {wildcards.outdir}/{wildcards.sample}.{wildcards.variety}.star. \
+    --outFileNamePrefix {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star. \
     --outSAMtype BAM SortedByCoordinate \
     --limitGenomeGenerateRAM 100000000000 \
     --limitBAMsortRAM 3000000000 \
     --genomeDir {input.star_index_directory}
 
     # Clean up uneccessary files 
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.variety}.star.Log.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.variety}.star.Log.final.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.variety}.star.Log.progress.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.variety}.star.SJ.out.tab
+    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.out
+    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.final.out
+    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.progress.out
+    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.SJ.out.tab
     """
+
+rule star_align_se:
+    # Aligning single-end reads with STAR
+    input:
+        star_index_directory = "{outdir}/{genome_aligned_to}.star.index",
+        read = "{outdir}/{sample}.se.trim.fastq.gz",
+    output: 
+        bam = "{outdir}/{sample}.{genome_aligned_to}.se.star.Aligned.sortedByCoord.out.bam",
+    shell: r"""
+    STAR \
+    --readFilesIn {input.read} \
+    --readFilesCommand zcat \
+    --outFileNamePrefix {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star. \
+    --outSAMtype BAM SortedByCoordinate \
+    --limitGenomeGenerateRAM 100000000000 \
+    --limitBAMsortRAM 3000000000 \
+    --genomeDir {input.star_index_directory}
+
+    # Clean up unnecessary files 
+    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.out
+    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.final.out
+    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.progress.out
+    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.SJ.out.tab
+    """
+
 
 
 rule star_rename:
     # This rule cleans up the output of star containing .Aligned.sortedByCoord.out in the output 
-    input: "{outdir}/{sample}.{variety}.star.Aligned.sortedByCoord.out.bam"
-    output: "{outdir}/{sample}.{variety}.star.bam"
+    # .{read_type} is either .pe or .se
+    input: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.star.Aligned.sortedByCoord.out.bam"
+    output: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.star.bam"
     shell: "mv {input} {output}"
 
 
-rule bowtie2_align:
-    # snakemake ../../../../../tmp/LE1.test.bowtie2.bam -s align.smk --cores 16
+rule bowtie2_align_pe:
+    # Aligning paired-end reads with bowtie 
     input:
-        bowtie2_index = multiext("{outdir}/{variety}.bowtie2.index.",            
+        bowtie2_index = multiext("{outdir}/{genome_aligned_to}.bowtie2.index.",            
             "1.bt2",
             "2.bt2",
             "3.bt2",
             "4.bt2",
             "rev.1.bt2",
             "rev.2.bt2",),
-        read_1 = "{outdir}/{sample}_1P.trim.fastq.gz", 
-        read_2 = "{outdir}/{sample}_2P.trim.fastq.gz",
-    output: "{outdir}/{sample}.{variety}.bowtie2.bam"
+        read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
+        read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
+    output: "{outdir}/{sample}.{genome_aligned_to}.pe.bowtie2.bam"
     shell: r""" 
-        bowtie2 -x {wildcards.outdir}/{wildcards.variety}.bowtie2.index -1 {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
+        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -1 {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
         """
 
+rule bowtie2_align_se:
+    # Aligning single-end reads with bowtie 
+    input:
+        bowtie2_index = multiext("{outdir}/{genome_aligned_to}.bowtie2.index.",            
+            "1.bt2",
+            "2.bt2",
+            "3.bt2",
+            "4.bt2",
+            "rev.1.bt2",
+            "rev.2.bt2",),
+        read = "{outdir}/{sample}.se.trim.fastq.gz", 
+    output: "{outdir}/{sample}.{genome_aligned_to}.se.bowtie2.bam"
+    shell: r""" 
+        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -U {input.read} | samtools view -bS > {output}
+        """
 
 rule bowtie2_align_large:
     input:
-        bowtie2_index = multiext("{outdir}/{variety}.bowtie2.index.",            
+        bowtie2_index = multiext("{outdir}/{genome_aligned_to}.bowtie2.index.",            
             "1.bt2l",
             "2.bt2l",
             "3.bt2l",
@@ -176,51 +222,80 @@ rule bowtie2_align_large:
             "rev.2.bt2l",),
         read_1 = "{outdir}/{sample}_1P.trim.fastq.gz", 
         read_2 = "{outdir}/{sample}_2P.trim.fastq.gz",
-    output: "{outdir}/{sample}.{variety}.bowtie2.large.bam"
+    output: "{outdir}/{sample}.{genome_aligned_to}.bowtie2.large.bam"
     shell: r""" 
-        bowtie2 -x {wildcards.outdir}/{wildcards.variety}.bowtie2.index -1 {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
+        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -1 {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
         """
 
 
-rule bwa_align:
+rule bwa_align_pe:
+    # Aligning paired-end reads with bwa
     input:
-        bwa_index = multiext("{outdir}/{variety}.bwa.index.",
+        bwa_index = multiext("{outdir}/{genome_aligned_to}.bwa.index.",
         "amb",
         "ann",
         "bwt",
         "pac",
         "sa",),
-        read_1 = "{outdir}/{sample}_1P.trim.fastq.gz", 
-        read_2 = "{outdir}/{sample}_2P.trim.fastq.gz",
-    output: "{outdir}/{sample}.{variety}.bwa.bam"
+        read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
+        read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
+    output: "{outdir}/{sample}.{genome_aligned_to}.pe.bwa.bam"
     shell: r""" 
-    bwa mem {wildcards.outdir}/{wildcards.variety}.bwa.index {input.read_1} {input.read_2} | samtools view -bS > {output}
+    bwa mem {wildcards.outdir}/{wildcards.genome_aligned_to}.bwa.index {input.read_1} {input.read_2} | samtools view -bS > {output}
+    """
+
+rule bwa_align_se:
+    # Aligning single-end reads with bwa
+    input:
+        bwa_index = multiext("{outdir}/{genome_aligned_to}.bwa.index.",
+        "amb",
+        "ann",
+        "bwt",
+        "pac",
+        "sa",),
+        read = "{outdir}/{sample}.se.trim.fastq.gz", 
+    output: "{outdir}/{sample}.{genome_aligned_to}.se.bwa.bam"
+    shell: r""" 
+    bwa mem {wildcards.outdir}/{wildcards.genome_aligned_to}.bwa.index {input.read} | samtools view -bS > {output}
     """
 
 
-rule hisat2_align:
+rule hisat2_align_pe:
+    # Align paired-end reads with hisat2 
     input: 
-        index = expand("{{outdir}}/{{variety}}.hisat2.index.{num}.ht2", num=["1", "2", "3", "4", "5", "6", "7", "8"]),
-        read_1 = "{outdir}/{sample}_1P.trim.fastq.gz", 
-        read_2 = "{outdir}/{sample}_2P.trim.fastq.gz",
-    output: "{outdir}/{sample}.{variety}.hisat2.bam"
+        index = expand("{{outdir}}/{{genome_aligned_to}}.hisat2.index.{num}.ht2", num=["1", "2", "3", "4", "5", "6", "7", "8"]),
+        read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
+        read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
+    output: "{outdir}/{sample}.{genome_aligned_to}.pe.hisat2.bam"
     shell: r"""
-    hisat2 -x {wildcards.outdir}/{wildcards.variety}.hisat2.index -p {threads} -1 {input.read_1} -2 {input.read_1} | \
-    samtools view -bS > {wildcards.outdir}/{wildcards.sample}.{wildcards.variety}.hisat2.bam
+    hisat2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.hisat2.index -p {threads} -1 {input.read_1} -2 {input.read_1} | \
+    samtools view -bS > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.hisat2.bam
+    """
+
+
+rule hisat2_align_se:
+    # Align single-end reads with hisat2 
+    input: 
+        index = expand("{{outdir}}/{{genome_aligned_to}}.hisat2.index.{num}.ht2", num=["1", "2", "3", "4", "5", "6", "7", "8"]),
+        read = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
+    output: "{outdir}/{sample}.{genome_aligned_to}.pe.hisat2.bam"
+    shell: r"""
+    hisat2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.hisat2.index -p {threads} -U {input.read} | \
+    samtools view -bS > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.hisat2.bam
     """
 
 
 rule bamtools_statistics:
-    input: "{outdir}/{sample}.{variety}.{tool}.bam"
-    output: "{outdir}/{sample}.{variety}.{tool}.statistics.txt"
+    input: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.bam"
+    output: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.statistics.txt"
     shell: r"bamtools stats -in {input} > {output}"
 
 
 rule report_stats_csv:
     input: 
-        statistics="{outdir}/{sample}.{variety}.{tool}.statistics.txt"
+        statistics="{outdir}/{sample}.{genome_aligned_to}.{tool}.statistics.txt"
     output: 
-        csv="{outdir}/{sample}.{variety}.{tool}.statistics.csv"
+        csv="{outdir}/{sample}.{genome_aligned_to}.{tool}.statistics.csv"
     script:
         "../scripts/alignment_stats.py"
 
@@ -228,19 +303,19 @@ rule report_stats_csv:
 rule df_of_alignment_statistics:
     # snakemake -j1 ../../../../../tmp/summary_alignment_stats_for_test.csv -s align.smk --use-conda --conda-frontend conda
     input: 
-        #expand("{{outdir}}/{samples}{repeats}.{{variety}}.{tools}.statistics.csv", samples=["LE", "SP", "RO", "IS"], repeats=["1", "2", "3"], tools=["star", "bowtie2", "bwa", "hisat2"])
-        expand("{{outdir}}/{samples}{repeats}.{{variety}}.{tools}.statistics.csv", samples=["LE"], repeats=["1"], tools=["star", "bowtie2"])
+        #expand("{{outdir}}/{samples}{repeats}.{{genome_aligned_to}}.{tools}.statistics.csv", samples=["LE", "SP", "RO", "IS"], repeats=["1", "2", "3"], tools=["star", "bowtie2", "bwa", "hisat2"])
+        expand("{{outdir}}/{samples}{repeats}.{{genome_aligned_to}}.{tools}.statistics.csv", samples=["LE"], repeats=["1"], tools=["star", "bowtie2"])
     output:
-        csv="{outdir}/summary_alignment_stats_for_{variety}.csv"
+        csv="{outdir}/summary_alignment_stats_for_{genome_aligned_to}.csv"
     script:
         "../scripts/all_alignment_stats.py"
 
 
 rule generate_alignment_plots:
     input:
-        csv="{outdir}/summary_alignment_stats_for_{variety}.csv"
+        csv="{outdir}/summary_alignment_stats_for_{genome_aligned_to}.csv"
     output:
-        "{outdir}/alignment_plot_{variety}.pdf"
+        "{outdir}/alignment_plot_{genome_aligned_to}.pdf"
     conda:
         "../envs/rscript.yaml"
     script:
