@@ -1,16 +1,14 @@
-### Aligning the reads, first create the tools index files and then align them 
-# Possibly the assemby and annotation names should be saved as tuples in the config file?
-# For fielder the assemly name is  ____ for fielder the annotation is ________- note I need to add the liftover into the pipeline?
-# Index files are called assembly_name.indexer_tool_name.index (maybe using the annotation name would be equivalent?)
-# The test files are a small bacterial genome, just used in debugging test files. 
+# This script generates genome indexes, maps reads, and does post mapping processing for a variety of mapping tools.
 
+########## Helper functions ########## 
+include: "common.smk"
 
-# At some point move these helper functions to the config file?
 def get_fasta(genome_aligned_to):
     variety_assembly_dict = {'CS':'/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/chinese_spring_genome_data/GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic_modified.fna', # Note modified to have the same chromosome names as the annotation
                     'fielder': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta', 
                     'cadenza': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_genome_data/'} # Note currently no cadenza genome files
     return variety_assembly_dict[genome_aligned_to]
+
 
 def get_gtf(genome_aligned_to):
     variety_annotation_dict = {'CS': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/chinese_spring_genome_data/iwgsc_refseqv2.1_annotation_200916_HC.gff3', 
@@ -19,21 +17,45 @@ def get_gtf(genome_aligned_to):
     return variety_annotation_dict[genome_aligned_to]
 
 
+
 ########## Genome Indexing ##########
 
 rule star_genome_index:
-    # Generates a star index of given genome. 
-    # NOTE that the names of the chromosomes on the assembly and the annotation have to be the same 
-    # So for CS the assembly is modified using sed e.g. sed -e 's/>NC_057794.1 />Chr1A /' GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic_modified.fna
-    # sed -e 's/>NC_057794.1 />Chr1A /
-    
+    """
+    Generates a star index of given genome. 
+    The names of the chromosomes on the assembly and the annotation have to be the same 
+    So for CS the assembly is modified using sed e.g. sed -e 's/>NC_057794.1 />Chr1A /' GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic_modified.fna
+    sed -e 's/>NC_057794.1 />Chr1A /' \
+        -e 's/>NC_057795.1 />Chr1B /' \
+        -e 's/>NC_057796.1 />Chr1D /' \
+        -e 's/>NC_057797.1 />Chr2A /' \
+        -e 's/>NC_057798.1 />Chr2B /' \
+        -e 's/>NC_057799.1 />Chr2D /' \
+        -e 's/>NC_057800.1 />Chr3A /' \
+        -e 's/>NC_057801.1 />Chr3B /' \
+        -e 's/>NC_057802.1 />Chr3D /' \
+        -e 's/>NC_057803.1 />Chr4A /' \
+        -e 's/>NC_057804.1 />Chr4B /' \
+        -e 's/>NC_057805.1 />Chr4D /' \
+        -e 's/>NC_057806.1 />Chr5A /' \
+        -e 's/>NC_057807.1 />Chr5B /' \
+        -e 's/>NC_057808.1 />Chr5D /' \
+        -e 's/>NC_057809.1 />Chr6A /' \
+        -e 's/>NC_057810.1 />Chr6B /' \
+        -e 's/>NC_057811.1 />Chr6D /' \
+        -e 's/>NC_057812.1 />Chr7A /' \
+        -e 's/>NC_057813.1 />Chr7B /' \
+        -e 's/>NC_057814.1 />Chr7D /' \
+        GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic.fna GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic_modified.fna 
+        which is in this script bash CAGE/input_data/chinese_spring_genome_data/modify_assembly.sh
+    """
     input:
         fasta = lambda wildcards : get_fasta(wildcards.genome_aligned_to),  
         gtf = lambda wildcards : get_gtf(wildcards.genome_aligned_to),
     output: directory("{outdir}/{genome_aligned_to}.star.index")
     threads: 16
     shell:
-        """
+        r"""
         # Create temporary directory
         tempdir=$(mktemp -d)
         trap "rm -rf $tempdir" EXIT
@@ -44,7 +66,7 @@ rule star_genome_index:
             --genomeFastaFiles {input.fasta} \
             --sjdbGTFfile {input.gtf} \
             --sjdbOverhang 100 \
-            --limitGenomeGenerateRAM 172020153610 \
+            --limitGenomeGenerateRAM 222020153610 \
             --genomeDir $tempdir \
         
         # Move outputs to proper location
@@ -53,6 +75,7 @@ rule star_genome_index:
 
 
 rule bowtie2_genome_index:
+    # Generates a bowtie2 index of given genome.
     input: lambda wildcards : get_fasta(wildcards.genome_aligned_to)
     output: 
         multiext(
@@ -64,6 +87,7 @@ rule bowtie2_genome_index:
             "rev.1.bt2",
             "rev.2.bt2",
          )
+    threads: 16
     shell: 
         r"""
         bowtie2-build {input} {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index
@@ -71,6 +95,7 @@ rule bowtie2_genome_index:
 
 
 rule bowtie2_genome_index_large:
+    # Generates a bowtie2 index of given genome, when the genome is large e.g. bt2l file ending rather than bt2
     input: lambda wildcards : get_fasta(wildcards.genome_aligned_to)
     output: 
         multiext(
@@ -89,6 +114,7 @@ rule bowtie2_genome_index_large:
 
 
 rule bwa_genome_index:
+    # Generates a bwa index of a given genome
     input: lambda wildcards : get_fasta(wildcards.genome_aligned_to)
     output: 
         multiext(
@@ -105,6 +131,7 @@ rule bwa_genome_index:
 
 
 rule hisat2_genome_index:
+    # Generates a hisat2 index of a given genome
     input:
         fasta = lambda wildcards : get_fasta(wildcards.genome_aligned_to),  
         gtf = lambda wildcards : get_gtf(wildcards.genome_aligned_to),
@@ -117,7 +144,7 @@ rule hisat2_genome_index:
         """
 
 
-########## Aligning Paired Trimmed Reads  ##########
+########## Aligning Trimmed Reads ########## 
 
 rule star_align_pe:
     # Aligning paired end reads with STAR
@@ -126,23 +153,28 @@ rule star_align_pe:
         read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
         read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
     output: 
-        bam = "{outdir}/{sample}.{genome_aligned_to}.pe.star.Aligned.sortedByCoord.out.bam",
-    shell: r"""
-    STAR \
-    --readFilesIn {input.read_1} {input.read_2} \
-    --readFilesCommand zcat \
-    --outFileNamePrefix {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star. \
-    --outSAMtype BAM SortedByCoordinate \
-    --limitGenomeGenerateRAM 100000000000 \
-    --limitBAMsortRAM 3000000000 \
-    --genomeDir {input.star_index_directory}
+        bam = "{outdir}/{sample}_R{num}.{genome_aligned_to}.pe.star.Aligned.sortedByCoord.out.bam", # Check that this is correct _R1
+    threads: 16
+    shell: 
+        r"""
+        STAR \
+        --runThreadN {threads} \
+        --readFilesIn {input.read_1} {input.read_2} \
+        --readFilesCommand zcat \
+        --outFileNamePrefix {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.pe.star. \
+        --outSAMtype BAM SortedByCoordinate \
+        --limitGenomeGenerateRAM 100000000000 \
+        --limitBAMsortRAM 3000000000 \
+        --genomeDir {input.star_index_directory}
 
-    # Clean up uneccessary files 
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.final.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.progress.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.SJ.out.tab
-    """
+        # Clean up uneccessary files 
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.pe.star.Log.out
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.pe.star.Log.final.out
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.pe.star.Log.progress.out
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.pe.star.SJ.out.tab
+        rm -rf {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.pe.star._STARtmp
+        """
+
 
 rule star_align_se:
     # Aligning single-end reads with STAR
@@ -151,28 +183,30 @@ rule star_align_se:
         read = "{outdir}/{sample}.se.trim.fastq.gz",
     output: 
         bam = "{outdir}/{sample}.{genome_aligned_to}.se.star.Aligned.sortedByCoord.out.bam",
-    shell: r"""
-    STAR \
-    --readFilesIn {input.read} \
-    --readFilesCommand zcat \
-    --outFileNamePrefix {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star. \
-    --outSAMtype BAM SortedByCoordinate \
-    --limitGenomeGenerateRAM 100000000000 \
-    --limitBAMsortRAM 3000000000 \
-    --genomeDir {input.star_index_directory}
+    threads: 16
+    shell: 
+        r"""
+        STAR \
+        --runThreadN {threads} \
+        --readFilesIn {input.read} \
+        --readFilesCommand zcat \
+        --outFileNamePrefix {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.se.star. \
+        --outSAMtype BAM SortedByCoordinate \
+        --limitGenomeGenerateRAM 100000000000 \
+        --limitBAMsortRAM 3000000000 \
+        --genomeDir {input.star_index_directory}
 
-    # Clean up unnecessary files 
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.final.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.Log.progress.out
-    rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.star.SJ.out.tab
-    """
-
+        # Clean up unnecessary files 
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.se.star.Log.out
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.se.star.Log.final.out
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.se.star.Log.progress.out
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.se.star.SJ.out.tab
+        rm -rf {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.se.star._STARtmp
+        """
 
 
 rule star_rename:
-    # This rule cleans up the output of star containing .Aligned.sortedByCoord.out in the output 
-    # .{read_type} is either .pe or .se
+    # Cleans up the output name of the mapped reads from STAR 
     input: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.star.Aligned.sortedByCoord.out.bam"
     output: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.star.bam"
     shell: "mv {input} {output}"
@@ -191,8 +225,10 @@ rule bowtie2_align_pe:
         read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
         read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
     output: "{outdir}/{sample}.{genome_aligned_to}.pe.bowtie2.bam"
-    shell: r""" 
-        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -1 {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
+    threads: 16
+    shell: 
+        r""" 
+        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -1 {input.read_1} -2 {input.read_2} --threads {threads}| samtools view -bS > {output}
         """
 
 rule bowtie2_align_se:
@@ -207,9 +243,12 @@ rule bowtie2_align_se:
             "rev.2.bt2",),
         read = "{outdir}/{sample}.se.trim.fastq.gz", 
     output: "{outdir}/{sample}.{genome_aligned_to}.se.bowtie2.bam"
-    shell: r""" 
-        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -U {input.read} | samtools view -bS > {output}
+    threads: 16
+    shell: 
+        r""" 
+        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -U {input.read} --threads {threads}| samtools view -bS > {output}
         """
+
 
 rule bowtie2_align_large:
     input:
@@ -223,8 +262,10 @@ rule bowtie2_align_large:
         read_1 = "{outdir}/{sample}_1P.trim.fastq.gz", 
         read_2 = "{outdir}/{sample}_2P.trim.fastq.gz",
     output: "{outdir}/{sample}.{genome_aligned_to}.bowtie2.large.bam"
-    shell: r""" 
-        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -1 {input.read_1} -2 {input.read_2} | samtools view -bS > {output}
+    threads: 16
+    shell: 
+        r""" 
+        bowtie2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.bowtie2.index -1 {input.read_1} -2 {input.read_2} --threads {threads}| samtools view -bS > {output}
         """
 
 
@@ -240,9 +281,12 @@ rule bwa_align_pe:
         read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
         read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
     output: "{outdir}/{sample}.{genome_aligned_to}.pe.bwa.bam"
-    shell: r""" 
-    bwa mem {wildcards.outdir}/{wildcards.genome_aligned_to}.bwa.index {input.read_1} {input.read_2} | samtools view -bS > {output}
-    """
+    threads: 16
+    shell: 
+        r""" 
+        bwa mem {wildcards.outdir}/{wildcards.genome_aligned_to}.bwa.index {input.read_1} {input.read_2} -t {threads} | samtools view -bS > {output}
+        """
+
 
 rule bwa_align_se:
     # Aligning single-end reads with bwa
@@ -255,9 +299,11 @@ rule bwa_align_se:
         "sa",),
         read = "{outdir}/{sample}.se.trim.fastq.gz", 
     output: "{outdir}/{sample}.{genome_aligned_to}.se.bwa.bam"
-    shell: r""" 
-    bwa mem {wildcards.outdir}/{wildcards.genome_aligned_to}.bwa.index {input.read} | samtools view -bS > {output}
-    """
+    threads: 16
+    shell: 
+        r""" 
+        bwa mem {wildcards.outdir}/{wildcards.genome_aligned_to}.bwa.index {input.read} -t {threads} | samtools view -bS > {output}
+        """
 
 
 rule hisat2_align_pe:
@@ -267,10 +313,12 @@ rule hisat2_align_pe:
         read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
         read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
     output: "{outdir}/{sample}.{genome_aligned_to}.pe.hisat2.bam"
-    shell: r"""
-    hisat2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.hisat2.index -p {threads} -1 {input.read_1} -2 {input.read_1} | \
-    samtools view -bS > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.hisat2.bam
-    """
+    threads: 16
+    shell: 
+        r"""
+        hisat2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.hisat2.index -p {threads} -1 {input.read_1} -2 {input.read_1} | \
+        samtools view -bS > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.pe.hisat2.bam
+        """
 
 
 rule hisat2_align_se:
@@ -279,48 +327,115 @@ rule hisat2_align_se:
         index = expand("{{outdir}}/{{genome_aligned_to}}.hisat2.index.{num}.ht2", num=["1", "2", "3", "4", "5", "6", "7", "8"]),
         read = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
     output: "{outdir}/{sample}.{genome_aligned_to}.pe.hisat2.bam"
-    shell: r"""
-    hisat2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.hisat2.index -p {threads} -U {input.read} | \
-    samtools view -bS > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.hisat2.bam
-    """
+    threads: 16
+    shell: 
+        r"""
+        hisat2 -x {wildcards.outdir}/{wildcards.genome_aligned_to}.hisat2.index -p {threads} -U {input.read} | \
+        samtools view -bS > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.se.hisat2.bam
+        """
 
 
 rule bamtools_statistics:
     input: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.bam"
-    output: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.statistics.txt"
-    shell: r"bamtools stats -in {input} > {output}"
+    output: temp("{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.statistics.txt")
+    threads: 16
+    shell: 
+        r"bamtools stats -in {input} -p {threads}> {output}"
 
 
 rule report_stats_csv:
+    # Turns the text file output of bamtools statistics and turns it into a csv so that it can be concatenated in the rule df_of_alignment_statistics
     input: 
-        statistics="{outdir}/{sample}.{genome_aligned_to}.{tool}.statistics.txt"
+        statistics="{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.statistics.txt"
     output: 
-        csv="{outdir}/{sample}.{genome_aligned_to}.{tool}.statistics.csv"
+        csv=temp("{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.statistics.csv")
     script:
         "../scripts/alignment_stats.py"
 
 
 rule df_of_alignment_statistics:
-    # snakemake -j1 ../../../../../tmp/summary_alignment_stats_for_test.csv -s align.smk --use-conda --conda-frontend conda
+    # Generates a dataframe of the alignment statistics from bamtools of the files listed in units.csv
     input: 
-        #expand("{{outdir}}/{samples}{repeats}.{{genome_aligned_to}}.{tools}.statistics.csv", samples=["LE", "SP", "RO", "IS"], repeats=["1", "2", "3"], tools=["star", "bowtie2", "bwa", "hisat2"])
-        expand("{{outdir}}/{samples}{repeats}.{{genome_aligned_to}}.{tools}.statistics.csv", samples=["LE"], repeats=["1"], tools=["star", "bowtie2"])
+        getAllAllignmentStatisticCSVs
     output:
-        csv="{outdir}/summary_alignment_stats_for_{genome_aligned_to}.csv"
+        csv="{outdir}/summary_alignment_stats.{genome_aligned_to}.{tool}.csv"
     script:
         "../scripts/all_alignment_stats.py"
 
 
 rule generate_alignment_plots:
+    # Note, currently the r packages are installed in snakemake conda env. But can instead do conda: "../envs/rscript.yaml"
     input:
         csv="{outdir}/summary_alignment_stats_for_{genome_aligned_to}.csv"
     output:
         "{outdir}/alignment_plot_{genome_aligned_to}.pdf"
-    conda:
-        "../envs/rscript.yaml"
     script:
         "../scripts/plot_alignment_results.R"
-    
-    
-    
-    
+        
+
+rule post_align_processing:
+    # Post-alignment processing on BAM files generated from sequencing data.
+    # Generates sorted bed file and a text file with the number of uniquley mapped reads on each strand 
+    input:
+        bam_file="{outdir}/{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.bam"
+    output:
+        summary_statistics="{outdir}/{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.summary_statistics.txt",
+        sorted_bed_file="{outdir}/{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.sorted.ctss.bed"
+    shell:
+        r"""
+        # Sort 
+        samtools sort --threads 1 {input.bam_file} -o {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam
+
+        # Human readable .sam files 
+        samtools view -h --threads 1 {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.sam
+
+        echo "Total number of reads in the BAM file" >> {output.summary_statistics}
+        samtools view -c {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam >> {output.summary_statistics}
+
+        echo "Counting only mapped (primary aligned) reads" >> {output.summary_statistics}
+        samtools view -c -F 260 {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam >> {output.summary_statistics}
+
+        bedtools genomecov -ibam {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam -5 -strand + -bg > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed
+        bedtools genomecov -ibam {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam -5 -strand - -bg > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed
+
+        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed:" >> {output.summary_statistics}
+        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed >> {output.summary_statistics}
+
+        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed:" >> {output.summary_statistics}
+        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed >> {output.summary_statistics}
+
+        cat {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed | awk '{{print $1 "\t" $2 "\t" "+" "\t" $4}}' > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed
+        cat {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed | awk '{{print $1 "\t" $2 "\t" "-" "\t" $4}}' > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed
+
+        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed:" >> {output.summary_statistics}
+        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed >> {output.summary_statistics}
+
+        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed:" >> {output.summary_statistics}
+        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed >> {output.summary_statistics}
+
+        cat {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed
+
+        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed:" >> {output.summary_statistics}
+        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed >> {output.summary_statistics}
+
+        sort -k1,1 -k2,2n {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed > {output.sorted_bed_file}
+
+        echo "Statistics for {output.sorted_bed_file}:" >> {output.summary_statistics}
+        wc -l {output.sorted_bed_file} >> {output.summary_statistics}
+
+        echo "---------------------------------------------" >> {output.summary_statistics}
+        echo "" >> {output.summary_statistics}
+
+        # Cleanup
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed
+        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed
+        rm {wildcards.outdir}.{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed
+        rm {wildcards.outdir}.{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed
+        rm {wildcards.outdir}.{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed
+        """
+
+
+
+
+ 

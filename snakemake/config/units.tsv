@@ -3,18 +3,18 @@
 # input_data = /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/
 sample number_reads fq1 fq2
 # Fielder Data
-#IS1 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS1_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS1_R2.fastq.gz
-#IS2 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS2_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS2_R2.fastq.gz
-#IS3 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS3_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS3_R2.fastq.gz
-#SP1 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP1_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP1_R2.fastq.gz
-#SP2 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP2_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP2_R2.fastq.gz
-#SP3 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP3_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP3_R2.fastq.gz
-#RO1 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO1_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO1_R2.fastq.gz
-#RO2 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO2_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO2_R2.fastq.gz
-#RO3 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO3_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO3_R2.fastq.gz
+IS1 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS1_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS1_R2.fastq.gz
+IS2 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS2_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS2_R2.fastq.gz
+IS3 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS3_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/IS3_R2.fastq.gz
+SP1 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP1_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP1_R2.fastq.gz
+SP2 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP2_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP2_R2.fastq.gz
+SP3 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP3_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/SP3_R2.fastq.gz
+RO1 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO1_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO1_R2.fastq.gz
+RO2 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO2_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO2_R2.fastq.gz
+RO3 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO3_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/RO3_R2.fastq.gz
 LE1 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE1_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE1_R2.fastq.gz
-#LE2 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE2_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE2_R2.fastq.gz
-#LE3 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE3_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE3_R2.fastq.gz
+LE2 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE2_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE2_R2.fastq.gz
+LE3 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE3_R1.fastq.gz /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/LE3_R2.fastq.gz
 #
 #SIS1 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/FB_2018_05_PLATF_IS1_S10_R1_001.fastq.gz
 #SIS2 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_cage_data/FB_2018_05_PLATF_IS2_S11_R1_001.fastq.gz
@@ -32,14 +32,14 @@ LE1 2 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/inp
 # Cadenza Data
 CL1 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CL1.fastq.gz
 CL2 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CL2.fastq.gz
-#CL3 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CL3.fastq.gz
-#CL4 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CL4.fastq.gz
-#CL5 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CL5.fastq.gz
-#CR1 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR1.fastq.gz
-#CR2 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR2.fastq.gz
-#CR3 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR3.fastq.gz
-#CR4 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR4.fastq.gz
-#CR5 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR5.fastq.gz
+CL3 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CL3.fastq.gz
+CL4 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CL4.fastq.gz
+CL5 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CL5.fastq.gz
+CR1 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR1.fastq.gz
+CR2 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR2.fastq.gz
+CR3 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR3.fastq.gz
+CR4 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR4.fastq.gz
+CR5 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_cage_data/CR5.fastq.gz
 #
 # Chinese Spring Data
 #SE1_run1 1 /ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/chinese_spring_data/SRR18286261.fastq.gz

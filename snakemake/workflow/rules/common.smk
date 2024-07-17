@@ -37,9 +37,9 @@ def getAllTrimmedCountFiles(wildcards):
     reads = units['number_reads'].tolist()
     path = wildcards.outdir
 
-    x = [[sample + '_R1.pe', sample + '_R2.pe'] if number == "2" else [sample + '.se'] for sample, number in zip(samples, reads)] # E.g. IS1_R1
+    x = [[sample + '_R1.pe', sample + '_R2.pe'] if number == "2" else [sample + '.se'] for sample, number in zip(samples, reads)] 
     flat  = [item for sublist in x for item in sublist]
-    trimmed = [os.path.join(path, name + '.trim.count') for name in flat]  # E.g. ../../../../../tmp/IS1_R1.trim.count
+    trimmed = [os.path.join(path, name + '.trim.count') for name in flat] 
     print(f'all trimmed files are {trimmed}')
     return trimmed
 
@@ -53,8 +53,34 @@ def getAllUntrimmedCountFiles(wildcards):
     samples = units['sample'].tolist()
     reads = units['number_reads'].tolist()
     path = wildcards.outdir
-    x = [[sample + '_R1.pe', sample + '_R2.pe'] if number == "2" else [sample + '.se'] for sample, number in zip(samples, reads)] # E.g. IS1_R1
+    x = [[sample + '_R1.pe', sample + '_R2.pe'] if number == "2" else [sample + '.se'] for sample, number in zip(samples, reads)] 
     flat  = [item for sublist in x for item in sublist]
     untrimmed = [os.path.join(path, name + '.untrim.count') for name in flat]
     print(f'all untrimmed files are {untrimmed}')
     return untrimmed
+
+
+def getAllAllignmentStatisticCSVs(wildcards):
+    """
+    Returns a list of the .CS.se.star.statistics.csv from the samples in samples.tsv for a given genome aligned to and aligner tool, which are set in the output file name as wildcards
+    """
+    samples = units['sample'].tolist()
+    reads = units['number_reads'].tolist()
+
+    genome_aligned_to = wildcards.genome_aligned_to
+    alignment_tool = wildcards.tool
+    path = wildcards.outdir
+
+    alignment_statistics = []
+
+    for sample, number in zip(samples, reads):
+        if number == '1':
+            alignment_statistics.append(f"{sample}.{genome_aligned_to}.se.{alignment_tool}.statistics.csv")
+        else:
+            endings = ['R1', 'R2']
+            alignment_statistics.extend([
+                f"{sample}_{end}.{genome_aligned_to}.pe.{alignment_tool}.statistics.csv" for end in endings
+            ])
+    alignment_statistics = [os.path.join(path, name) for name in alignment_statistics]
+    print(f'the alignment statistics are {alignment_statistics}')
+    return alignment_statistics

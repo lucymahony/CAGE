@@ -17,7 +17,7 @@ def main(snakemake):
     dfs = []
     for file_path in list_input_file_paths:
         sample, repeat, variety, tool = extract_variables_from_file(file_path)
-        df = pd.read_csv(f'../../../../../tmp/{sample}{repeat}.{variety}.{tool}.statistics.csv')
+        df = pd.read_csv(file_path)
         df['Sample'] = sample
         df['Repeat'] = repeat
         df['Tool'] = tool
