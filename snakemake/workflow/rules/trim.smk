@@ -1,5 +1,4 @@
 # Trim reads, write number of reads to count file, perform fastqc on trimmed reads 
-include: "common.smk"
 import pandas as pd
 
 def get_solexa(wildcards):

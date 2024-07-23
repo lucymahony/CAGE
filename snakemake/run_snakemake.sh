@@ -9,7 +9,7 @@
 source ~/.bashrc 
 mamba activate /hpc-home/mahony/miniforge3
 
-conda run -n snakemake snakemake --dry-run --use-conda ../intermediate_data/snakemake_intermediate_data/summary_alignment_stats.CS.star.csv -s workflow/Snakefile --use-conda --conda-frontend conda --cores 16
+conda run -n snakemake snakemake --use-conda ../intermediate_data/snakemake_intermediate_data/summary_alignment_stats.CS.star.csv -s workflow/Snakefile --use-conda --conda-frontend conda --cores 16
 
 #conda run -n snakemake snakemake --dry-run --use-conda ../intermediate_data/snakemake_intermediate_data/CR1.CS.se.star.statistics.csv -s workflow/rules/align.smk --use-conda --conda-frontend conda --cores 1
 
