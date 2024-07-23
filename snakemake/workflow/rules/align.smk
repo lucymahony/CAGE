@@ -1,7 +1,6 @@
 # This script generates genome indexes, maps reads, and does post mapping processing for a variety of mapping tools.
 
 ########## Helper functions ########## 
-include: "common.smk"
 
 def get_fasta(genome_aligned_to):
     variety_assembly_dict = {'CS':'/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/chinese_spring_genome_data/GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic_modified.fna', # Note modified to have the same chromosome names as the annotation
@@ -153,7 +152,7 @@ rule star_align_pe:
         read_1 = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
         read_2 = "{outdir}/{sample}_2P.pe.trim.fastq.gz",
     output: 
-        bam = "{outdir}/{sample}_R{num}.{genome_aligned_to}.pe.star.Aligned.sortedByCoord.out.bam", # Check that this is correct _R1
+        bam = "{outdir}/{sample}.{genome_aligned_to}.pe.star.Aligned.sortedByCoord.out.bam", # Check that this is correct _R1
     threads: 16
     shell: 
         r"""
@@ -337,10 +336,9 @@ rule hisat2_align_se:
 
 rule bamtools_statistics:
     input: "{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.bam"
-    output: temp("{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.statistics.txt")
-    threads: 16
+    output: temp("{outdir}/{sample}.{genome_aligned_to}.{read_type}.{tool}.statistics.txt") 
     shell: 
-        r"bamtools stats -in {input} -p {threads}> {output}"
+        r"bamtools stats -in {input} > {output}"
 
 
 rule report_stats_csv:
