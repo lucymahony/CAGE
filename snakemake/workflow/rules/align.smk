@@ -134,7 +134,7 @@ rule hisat2_genome_index:
     input:
         fasta = lambda wildcards : get_fasta(wildcards.genome_aligned_to),  
         gtf = lambda wildcards : get_gtf(wildcards.genome_aligned_to),
-    output: expand("{{outdir}}/{{genome_aligned_to}}.hisat2.index.{num}.ht2", num=[1, 2, 4, 5, 6, 7, 8])
+    output: expand("{{outdir}}/{{genome_aligned_to}}.hisat2.index.{num}.ht2", num=[1, 2, 3, 4, 5, 6, 7, 8])
     shell:
         r""" 
         hisat2_extract_splice_sites.py {input.gtf} > {wildcards.outdir}/fielder.ss
@@ -325,7 +325,7 @@ rule hisat2_align_se:
     input: 
         index = expand("{{outdir}}/{{genome_aligned_to}}.hisat2.index.{num}.ht2", num=["1", "2", "3", "4", "5", "6", "7", "8"]),
         read = "{outdir}/{sample}_1P.pe.trim.fastq.gz", 
-    output: "{outdir}/{sample}.{genome_aligned_to}.pe.hisat2.bam"
+    output: "{outdir}/{sample}.{genome_aligned_to}.se.hisat2.bam"
     threads: 16
     shell: 
         r"""
@@ -371,69 +371,3 @@ rule generate_alignment_plots:
         "../scripts/plot_alignment_results.R"
         
 
-rule post_align_processing:
-    # Post-alignment processing on BAM files generated from sequencing data.
-    # Generates sorted bed file and a text file with the number of uniquley mapped reads on each strand 
-    input:
-        bam_file="{outdir}/{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.bam"
-    output:
-        summary_statistics="{outdir}/{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.summary_statistics.txt",
-        sorted_bed_file="{outdir}/{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.sorted.ctss.bed"
-    shell:
-        r"""
-        # Sort 
-        samtools sort --threads 1 {input.bam_file} -o {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam
-
-        # Human readable .sam files 
-        samtools view -h --threads 1 {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.sam
-
-        echo "Total number of reads in the BAM file" >> {output.summary_statistics}
-        samtools view -c {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam >> {output.summary_statistics}
-
-        echo "Counting only mapped (primary aligned) reads" >> {output.summary_statistics}
-        samtools view -c -F 260 {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam >> {output.summary_statistics}
-
-        bedtools genomecov -ibam {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam -5 -strand + -bg > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed
-        bedtools genomecov -ibam {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam -5 -strand - -bg > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed
-
-        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed:" >> {output.summary_statistics}
-        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed >> {output.summary_statistics}
-
-        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed:" >> {output.summary_statistics}
-        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed >> {output.summary_statistics}
-
-        cat {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed | awk '{{print $1 "\t" $2 "\t" "+" "\t" $4}}' > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed
-        cat {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed | awk '{{print $1 "\t" $2 "\t" "-" "\t" $4}}' > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed
-
-        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed:" >> {output.summary_statistics}
-        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed >> {output.summary_statistics}
-
-        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed:" >> {output.summary_statistics}
-        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed >> {output.summary_statistics}
-
-        cat {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed > {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed
-
-        echo "Statistics for {wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed:" >> {output.summary_statistics}
-        wc -l {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed >> {output.summary_statistics}
-
-        sort -k1,1 -k2,2n {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed > {output.sorted_bed_file}
-
-        echo "Statistics for {output.sorted_bed_file}:" >> {output.summary_statistics}
-        wc -l {output.sorted_bed_file} >> {output.summary_statistics}
-
-        echo "---------------------------------------------" >> {output.summary_statistics}
-        echo "" >> {output.summary_statistics}
-
-        # Cleanup
-        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_sorted.bam
-        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.bed
-        rm {wildcards.outdir}/{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.bed
-        rm {wildcards.outdir}.{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_plus.ctss.bed
-        rm {wildcards.outdir}.{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}_minus.ctss.bed
-        rm {wildcards.outdir}.{wildcards.sample}.{wildcards.genome_aligned_to}.{wildcards.read_type}.{wildcards.mapping_tool}.ctss.bed
-        """
-
-
-
-
- 

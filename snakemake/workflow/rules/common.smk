@@ -84,3 +84,27 @@ def getAllAllignmentStatisticCSVs(wildcards):
     alignment_statistics = [os.path.join(path, name) for name in alignment_statistics]
     print(f'the alignment statistics are {alignment_statistics}')
     return alignment_statistics
+
+
+def getAllPostAlignmentStatistics(wildcards):
+    """
+    Returns a list of the .post_align_summary_statistics.txt from the samples in samples.tsv for a given genome aligned to and aligner tool, which are set in the output file name as wildcards
+    """
+    samples = units['sample'].tolist()
+    reads = units['number_reads'].tolist()
+    print(f'the reads are {reads}')
+
+    genome_aligned_to = wildcards.genome_aligned_to
+    mapping_tool = wildcards.mapping_tool
+    path = wildcards.outdir
+
+    post_alignment_statistics = []
+    for sample, read in zip(samples, reads):
+        if read == '1':
+            read_type = 'se'
+        else:
+            read_type = 'pe'
+        name = f"{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.post_align_summary_statistics_updated.txt"
+        post_alignment_statistics.append(os.path.join(path, name))
+    print(f'the post alignment statistics are {post_alignment_statistics}')
+    return post_alignment_statistics
