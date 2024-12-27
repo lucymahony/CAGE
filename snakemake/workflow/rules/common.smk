@@ -108,3 +108,25 @@ def getAllPostAlignmentStatistics(wildcards):
         post_alignment_statistics.append(os.path.join(path, name))
     print(f'the post alignment statistics are {post_alignment_statistics}')
     return post_alignment_statistics
+
+
+def getAllSortedCTSSNBedfiles(wildcards):
+    """
+    Returns a list of the sorted CTSS bed files from the samples in samples.tsv for a given genome aligned to and aligner tool, which are set in the output file name as wildcards
+    """
+    samples = units['sample'].tolist()
+    reads = units['number_reads'].tolist()
+
+    genome_aligned_to = wildcards.genome_aligned_to
+    mapping_tool = wildcards.mapping_tool
+    path = wildcards.outdir
+
+    sorted_ctss_bedfiles = []
+    for sample, read in zip(samples, reads):
+        if read == '1':
+            read_type = 'se'
+        else:
+            read_type = 'pe'
+        name = f"{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.sorted.ctss.n.bed"
+        sorted_ctss_bedfiles.append(os.path.join(path, name))
+    return sorted_ctss_bedfiles

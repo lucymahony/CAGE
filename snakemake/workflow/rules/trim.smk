@@ -7,8 +7,6 @@ def get_solexa(wildcards):
     """
     sample_name = wildcards.sample.split('_R')[0] # Removes the bit in the case of LE1_R1 e.c.t 
     samples_df = pd.read_csv('/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/snakemake/config/samples.tsv', delim_whitespace=True, dtype=str, comment="#", index_col=False)
-    
-    print(f'the sample name is {sample_name}')
     # Check if the sample_name exists in the DataFrame
     matching_rows = samples_df.loc[samples_df['sample_name'] == sample_name]
     if matching_rows.empty:
