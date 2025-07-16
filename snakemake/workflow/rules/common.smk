@@ -130,3 +130,25 @@ def getAllSortedCTSSNBedfiles(wildcards):
         name = f"{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}.sorted.ctss.n.bed"
         sorted_ctss_bedfiles.append(os.path.join(path, name))
     return sorted_ctss_bedfiles
+
+
+def getAllBigWigFiles(wildcards):
+    """
+    Returns a list of bigwig files for CAGE fight r analysis 
+        
+    """
+    samples = units['sample'].tolist()
+    reads = units['number_reads'].tolist()
+
+    genome_aligned_to = wildcards.genome_aligned_to
+    mapping_tool = wildcards.mapping_tool
+    path = wildcards.outdir
+    read_type = wildcards.read_type
+
+    bw_plus_files = []
+    bw_minus_files = []
+    for sample, read in zip(samples, reads):
+        name = f"{sample}.{genome_aligned_to}.{read_type}.{mapping_tool}"
+        bw_plus_files.append(os.path.join(path, name) + '_plus.unique.bw')
+        bw_minus_files.append(os.path.join(path, name) + '_minus.unique.bw')
+    return bw_plus_files, bw_minus_files

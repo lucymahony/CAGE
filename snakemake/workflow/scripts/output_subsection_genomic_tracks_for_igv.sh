@@ -1,0 +1,22 @@
+Genome assembly extraction complete
+Genome annotation extraction complete. Output:
+CAGE tag clusters extraction complete. Output:
+Chr7A	738266203	738266568	.	45.1774892268424	-	738266426	738266427
+Chr7A	738266844	738267045	.	9.24394766256421	-	738266878	738266879
+CAGE SAM file extraction complete
+Genome assembly extraction complete
+Genome annotation extraction complete. Output:
+CAGE tag clusters extraction complete. Output:
+Chr7B	754110400	754110480	.	0.585262948280301	+	754110439	754110440
+Chr7B	754110554	754110860	.	0.749617611838467	+	754110573	754110574
+Chr7B	754110918	754111251	.	1.49923522367694	+	754111017	754111018
+CAGE SAM file extraction complete
+Genome assembly extraction complete
+Genome annotation extraction complete. Output:
+CAGE tag clusters extraction complete. Output:
+Chr7D	639809901	639810102	.	0.57323699728824	-	639810096	639810097
+Chr7D	639810306	639810652	.	1.69966774021129	-	639810315	639810316
+Chr7D	639811089	639811169	.	1.10638749126961	-	639811129	639811130
+Chr7D	639812811	639813123	.	41.4855222722797	-	639812959	639812960
+Chr7D	639813478	639813849	.	26.7417063560129	-	639813532	639813533
+CAGE SAM file extraction complete

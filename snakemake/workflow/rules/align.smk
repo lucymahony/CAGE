@@ -5,14 +5,14 @@
 def get_fasta(genome_aligned_to):
     variety_assembly_dict = {'CS':'/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/chinese_spring_genome_data/GCF_018294505.1_IWGSC_CS_RefSeq_v2.1_genomic_modified.fna', # Note modified to have the same chromosome names as the annotation
                     'fielder': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_genome_data/201216_Fielder_pseudomolecules_V1+unanchored_contigs.fasta', 
-                    'cadenza': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_genome_data/'} # Note currently no cadenza genome files
+                    'cadenza': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_genome_data/24092024_cadenza_v2.fa'} 
     return variety_assembly_dict[genome_aligned_to]
 
 
 def get_gtf(genome_aligned_to):
     variety_annotation_dict = {'CS': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/chinese_spring_genome_data/iwgsc_refseqv2.1_annotation_200916_HC.gff3', 
                     'fielder': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/fielder_genome_data/fielder.release.gtf',
-                    'cadenza': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_genome_data/'} # Note currently no cadenza genome files
+                    'cadenza': '/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/input_data/cadenza_genome_data/TraesCAD_EIv1.0.release.gff3'} 
     return variety_annotation_dict[genome_aligned_to]
 
 

@@ -1,62 +1,88 @@
-library(ggplot2)
-library(reshape2)
-library(dplyr)
+suppressMessages(library(ggplot2))
+suppressMessages(library(reshape2))
+suppressMessages(library(dplyr))
+args <- commandArgs(trailingOnly = TRUE)
+input_file_path <- args[1]
+output_file_path <- args[2]
 
-file_path <- snakemake@input[['csv']]
-print(file_path)
-#data <-read.csv(file_path, sep = '\t', header = TRUE)
-#colnames(data)
+process_summary_statistics_text_file <- function(input_file_path) {
+  text <- readLines(input_file_path)
+  total_reads <- c()
+  primary_mapped <- c()
+  sample_names <- c()
+  current_total <- NA
+  current_primary <- NA
+  for (i in seq_along(text)) {
+    line <- text[i]
+    if (grepl("Total number of reads", line)) {
+      current_total <- as.numeric(text[i + 1])
+    }
+    
+    if (grepl("Counting only mapped", line)) {
+      current_primary <- as.numeric(text[i + 1])
+    }
+    
+    if (grepl("Statistics for", line)) {
+      sample_name <- gsub(".*intermediate_data/(.*)\\..*", "\\1", line)
+      sample_name <- gsub("\\..*", "", sample_name)
+      sample_names <- c(sample_names, sample_name)
+      total_reads <- c(total_reads, current_total)
+      primary_mapped <- c(primary_mapped, current_primary)
+    }
+  }
+  df <- data.frame(
+    Sample_Name = sample_names,
+    Total_Reads = total_reads,
+    Primary_Mapped_Reads = primary_mapped
+  )
+  df <- df[!duplicated(df), ]
+  return(df)
+}
 
+create_mapping_plot <- function(df) {
 
+  # Add a tissue type column based on Sample_Name
+  df <- df %>%
+    mutate(
+      Tissue = case_when(
+        grepl("^IS", Sample_Name) ~ "Fielder Immature Spike PE",
+        grepl("^SP", Sample_Name) ~ "Fielder Spike PE",
+        grepl("^RO", Sample_Name) ~ "Fielder Root PE",
+        grepl("^LE", Sample_Name) ~ "Fielder Leaf PE",
+        grepl("^SIS", Sample_Name) ~ "Fielder Immature Spike",
+        grepl("^SSP", Sample_Name) ~ "Fielder Spike",
+        grepl("^SRO", Sample_Name) ~ "Fielder Root",
+        grepl("^SLE", Sample_Name) ~ "Fielder Leaf",
+        grepl("^CL", Sample_Name) ~ "Cadenza Leaf",
+        grepl("^CR", Sample_Name) ~ "Cadenza Root",
+        grepl("^CSS", Sample_Name) ~ "Chinese Spring Spike",
+        grepl("^CSEM", Sample_Name) ~ "Chinese Spring Embryo",
+        grepl("^CSRO", Sample_Name) ~ "Chinese Spring Root",
+        TRUE ~ "Unknown"
+      )
+    )
+  df <- df %>%
+    filter(!Tissue %in% c("Fielder Immature Spike PE", "Fielder Spike PE", "Fielder Root PE", "Fielder Leaf PE"))
+  
+  df <- df %>%
+    mutate(
+      Percent_Primary_Mapped = (Primary_Mapped_Reads / Total_Reads) * 100
+    )
+  plot <- ggplot(df, aes(x = Tissue, y = Percent_Primary_Mapped, fill = Tissue)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    geom_point(position = position_dodge(width = 0.9), size = 3, alpha=0.9, color='grey') +
+    theme_minimal() +
+    labs(
+      x = "Tissue",
+      y = "Percentage of Reads Mapped",
+      title = "Percentage of Primary Mapped Reads per Tissue"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  return(plot)
+}
 
-# # Melt the data to long format
-# data_long <- melt(data, id.vars = "Tissue", variable.name = "Method", value.name = "Value")
-# data_long <- data_long %>%
-#   mutate(Type = gsub("\\..*", "", Method), 
-#          Bar = gsub(".*\\.", "", Method))
-# # Create a new variable for the grouped tissue type
-# data_long$Tissue_Group <- substr(data_long$Tissue, 1, 2)
-
-# # Calculate means
-# data_means <- data_long %>%
-#   group_by(Tissue_Group, Type, Bar) %>%
-#   summarize(Mean = mean(Value, na.rm = TRUE))
-
-# # Create the bar plot
-# p1 <- ggplot(data_means, aes(x = Type, y = Mean, fill = Tissue_Group)) + 
-#   geom_bar(stat = "identity", position = "dodge") +
-#   geom_jitter(data = data_long, aes(x = Type, y = Value, fill = Tissue_Group), 
-#                color = "grey", position = position_jitterdodge()) +
-#   facet_grid(~Bar) +
-#   labs(x = "Method", y = "Value", fill = "Tissue Group") +
-#   theme_bw()
-
-
-# p2 <- ggplot(data_means, aes(x = interaction(Type, Tissue_Group), y = Mean, fill = Bar)) + 
-#   geom_bar(stat = "identity", position = "dodge") +
-#   geom_jitter(data = data_long, aes(x = interaction(Type, Tissue_Group), y = Value), 
-#                color = "grey", position = position_jitterdodge()) +
-#   scale_fill_manual(values = c("grey", "white"), guide = guide_legend(title = "Type")) +
-#   labs(x = "Method and Tissue Group", y = "Value", fill = "Bar") +
-#   theme_bw()
-
-
-# # Create the bar plot
-# p3 <- ggplot(data_means, aes(x = interaction(Type, Tissue_Group), y = Mean, fill = Bar)) + 
-#   geom_bar(stat = "identity", position = "stack", aes(fill = Tissue_Group)) +
-#   geom_jitter(data = data_long, aes(x = interaction(Type, Tissue_Group), y = Value), 
-#                color = "grey", position = position_jitterdodge()) +
-#   labs(x = "Method and Tissue Group", y = "Value", fill = "Tissue Group") +
-#   theme_bw()
-
-# # Create the bar plot
-# p4 <- ggplot(data_means, aes(x = interaction(Type, Tissue_Group), y = Mean, fill = Bar)) + 
-#   geom_bar(stat = "identity", position = "stack", aes(fill = Tissue_Group), colour = "black") +
-#   geom_jitter(data = data_long, aes(x = interaction(Type, Tissue_Group), y = Value), 
-#                color = "grey", position = position_jitterdodge()) +
-#   labs(x = "Method and Tissue Group", y = "Value", fill = "Tissue Group") +
-#   theme_bw()
-
-# # Save bar plot with snakemake@output
-
-# ggsave(filename = snakemake@output, width = 7, height = 7)
+df <- process_summary_statistics_text_file(input_file_path)
+print(df)
+plot <- create_mapping_plot(df)
+ggsave(filename = output_file_path, plot, width = 7, height = 7)
+print('Plot saved at ')

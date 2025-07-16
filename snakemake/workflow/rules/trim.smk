@@ -30,6 +30,7 @@ rule trim_reads_pe:
         solexa = get_solexa,
     shell: 
         r"""
+        source package 50fcf79b-73a3-4f94-9553-5ed917823423 #  trimmomatic 0.39  
         echo {wildcards.sample} "!!!!" &&
         if [ -n "{input.solexa}" ]; then
             trimmomatic PE -threads {threads} {input[0]} {input[1]} \
@@ -48,6 +49,7 @@ rule trim_reads_se:
     input: get_fastqs,
     shell: 
         r"""
+        source package 50fcf79b-73a3-4f94-9553-5ed917823423 #  trimmomatic 0.39  
         trimmomatic SE -threads {threads} {input} {output} SLIDINGWINDOW:4:20 MINLEN:20 AVGQUAL:20 
         """
 

@@ -17,7 +17,7 @@ def plot_correlation_heatmap(input_file_path, output_file_path):
 
     plt.figure(figsize=(10, 8))
     
-    sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap=sns.color_palette("ch:start=.2,rot=-.3", as_cmap=True), cbar=True,
+    sns.heatmap(correlation_matrix, annot=False, fmt=".2f", cmap=sns.color_palette("ch:start=.2,rot=-.3", as_cmap=True), cbar=True,
                 square=True, linewidths=0.5)
     plt.title("Correlation Heatmap")
     plt.tight_layout()
@@ -32,4 +32,6 @@ if __name__ == "__main__":
     plot_correlation_heatmap(input_file_path, output_file_path)
     print('Script finished')
 
+    # source ~/.bashrc 
+    # mamba activate /hpc-home/mahony/miniforge3
     # Example command = python plot_correlation_heatmap.py ../../../intermediate_data/snakemake_intermediate_data/correlation_matrix.csv ../../../intermediate_data/snakemake_intermediate_data/correlation_matrix_seaborn_heatmap.png

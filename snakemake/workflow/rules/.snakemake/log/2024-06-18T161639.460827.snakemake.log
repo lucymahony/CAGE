@@ -1,0 +1,7 @@
+Building DAG of jobs...
+MissingInputException in rule trim_reads_se in file /ei/.project-scratch/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/repos/CAGE/test_snakemake/workflow/rules/trim.smk, line 25:
+Missing input files for rule trim_reads_se:
+    output: ../../../../../tmp/L1.trim.fastq.gz
+    wildcards: outdir=../../../../../tmp, sample=L1
+    affected files:
+        /data/run/Projects/Wheat/Cadenza_CAGE/fastq/L1.fastq.gz
