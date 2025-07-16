@@ -1,32 +1,38 @@
 # CAGE
 
-CAGE-seq data analysis pipeline.
+This repository contains a CAGE-seq data analysis pipeline.
 
-Files stored in the following structure:
+## Directory Structure
 
-'''
+The project is organized into the following structure:
+
+CAGE/
 ├── input_data/
-│ ├── *_cage_data/
-│ ├── *_genome_data/
+│ ├── *_cage_data/ # Raw CAGE-seq inputs
+│ └── *_genome_data/ # Reference genomes and annotations
 │
-├── intermediate_data/
+├── intermediate_data/ # Processed files and intermediate outputs
 │
 ├── results/
-│ ├── │ figs/
-│ ├── │ data/
-│ 
+│ ├── figs/ # Figures for plots and visualisations
+│ └── data/ # Final result files (e.g., tables)
+│
 ├── snakemake/
-│ ├── config/
-│ │  ├──config.yaml 
-│ │  ├──samples.tsv
-│ │  ├──units.tsv
-│ │ 
-├── workflow/
-│ │  ├──envs/
-│ │  ├──rules/
-│ │  ├──scripts/
-'''
+│ └── config/
+│ ├── config.yaml # Snakemake configuration
+│ ├── samples.tsv # Sample metadata
+│ └── units.tsv # Unit-level metadata
+│
+└── workflow/
+├── envs/ # Conda environments for each rule
+├── rules/ # Snakemake rule definitions
+└── scripts/ # Custom Python/R scripts used in rules
 
+## Getting Started
 
+To run the pipeline:
 
-
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/lucymahony/CAGE.git
+   cd CAGE
