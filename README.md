@@ -10,7 +10,7 @@ CAGE/
 │   ├── *_cage_data/           # Raw CAGE-seq inputs
 │   └── *_genome_data/         # Reference genomes and annotations
 
-├── intermediate_data/         
+├── tmp/         
 
 ├── results/
 │   ├── figs/                  
@@ -34,3 +34,9 @@ CAGE/
    ```
    git clone https://github.com/lucymahony/CAGE.git
    ```
+2. File paths:
+    Set up file paths in the config file units.tsv copying the file format
+    Specify tissue and genome in samples.tsv. Use the genome naming convention that matches the directories in input_data/
+
+3. Running analysis
+    Specify desired output files in `snakemake/run_snakemake.sh`

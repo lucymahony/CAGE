@@ -1,13 +1,3 @@
-# Configurable options in config.yaml explained here. 
-
-
-
-
-
-
-
-
-
 # Tissue abbreviations 
 LE : Leaf
 SP : Spike

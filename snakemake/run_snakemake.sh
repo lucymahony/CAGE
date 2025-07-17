@@ -1,6 +1,6 @@
 #!/bin/bash 
 #SBATCH -p ei-medium
-#SBATCH -o snake.out
+#SBATCH -o ../logs/snake.out
 #SBATCH -c 16
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mahony@nbi.ac.uk
