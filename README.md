@@ -4,7 +4,7 @@ This repository contains a CAGE-seq data analysis pipeline.
 
 
 ![Snakemake Workflow Diagram](docs/images/snakemake_pipeline.drawio.pdf)
- 
+![Snakemake Workflow Diagram](docs/images/Untitled\ Diagram.drawio.png)
 ## Directory Structure
 
 ```
