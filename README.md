@@ -24,7 +24,7 @@ CAGE/
 │       ├── config.yaml       
 │       ├── samples.tsv       
 │       └── units.tsv         
-
+│ 
 └── workflow/
     ├── envs/                  
     ├── rules/                

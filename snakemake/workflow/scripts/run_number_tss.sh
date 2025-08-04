@@ -7,9 +7,9 @@
 #SBATCH --mem=10G
 #SBATCH --time=0-0:12:00
 
-my_annotation_file='/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/intermediate_data/snakemake_intermediate_data/no_merge_reps/finalised_custom_annotations/ALL_TC_merged_output.csv'
-output_csv_file='/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/intermediate_data/snakemake_intermediate_data/finalised_custom_annotations_ALL_TCs.csv'
-output_directory='/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/intermediate_data/snakemake_intermediate_data/'
+my_annotation_file='/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/tmp/snakemake_intermediate_data/no_merge_reps/finalised_custom_annotations/ALL_TC_merged_output.csv'
+output_csv_file='/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/tmp/snakemake_intermediate_data/finalised_custom_annotations_ALL_TCs.csv'
+output_directory='/ei/projects/c/c3109f4b-0db1-43ec-8cb5-df48d8ea89d0/scratch/repos/CAGE/tmp/snakemake_intermediate_data/'
 
 
 source ~/.bashrc 

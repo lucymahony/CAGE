@@ -14,9 +14,6 @@ from matplotlib.ticker import ScalarFormatter
 import sys
 
 
-
-
-
 def process_cage_csv(file_path):
     """
     Processes a CAGE CSV file to summarize expression at promoter regions by gene.
@@ -126,6 +123,9 @@ if __name__ == "__main__":
     df = df.dropna() 
     top_genes = df.sort_values(by='Number_TC', ascending=False)
     top_gene = top_genes.iloc[0]
+    print(f"There are {len(df[df['Number_TC']==1])} genes with 1 TC")
+    print(f"There are {len(df[df['Number_TC']!=1])} genes with ! = 1 TC")
+    print(f"There are this many genes {df.shape[0]}")
     print(f"Top gene: {top_gene['Gene_name']} ({top_gene['Number_TC']} TCs)")
     second_gene = top_genes.iloc[1]
     print(f"Second gene: {second_gene['Gene_name']} ({second_gene['Number_TC']} TCs)")
